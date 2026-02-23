@@ -1,0 +1,131 @@
+{
+  "version": "1.0",
+  "generated_by": "ochra-testvec",
+  "vectors": {
+    "blake3_basic_hash": {
+      "description": "BLAKE3::hash(b\"Ochra test vector 1\")",
+      "inputs": {
+        "data": "Ochra test vector 1"
+      },
+      "outputs": {
+        "hash": "09d52711ca81d93f0dedcf66265690af3bc826a92cf44c09a54ad0c90a5de521"
+      }
+    },
+    "blake3_derive_key_profile": {
+      "description": "BLAKE3::derive_key(\"Ochra v1 profile-encryption-key\", 0x00*32)",
+      "inputs": {
+        "context": "Ochra v1 profile-encryption-key",
+        "key_material": "0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "outputs": {
+        "derived_key": "586d4e2f07919c314f19342ac769219c8e30672a0ab9a0737ccdfac1627aaa38"
+      }
+    },
+    "blake3_handle_lookup": {
+      "description": "BLAKE3::derive_key(\"Ochra v1 handle-lookup\", b\"testuser\")",
+      "inputs": {
+        "context": "Ochra v1 handle-lookup",
+        "key_material": "testuser"
+      },
+      "outputs": {
+        "derived_key": "b0949e7e6864b733cfdbe3f2024a0d9bf72d213fa4dbc2253047cbea0a78c414"
+      }
+    },
+    "blake3_keyed_hash_merkle": {
+      "description": "BLAKE3::keyed_hash(K_inner, 0x00*64) where K_inner = derive_key(\"Ochra v1 merkle-inner-node\", \"\")",
+      "inputs": {
+        "k_inner": "ebfb905bea49030f7bfa167e011ca2295d9b5c4876f38d5fb91706bdac10aedf",
+        "message": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "outputs": {
+        "mac": "4d40597e787c5c764e37cb7bbf5ded4dcde903b8002f8539c4159c837be6aa8d"
+      }
+    },
+    "bloom_filter_hash": {
+      "description": "NullifierSet Bloom filter hash derivation (20 indices)",
+      "inputs": {
+        "filter_size_bits": "28700000",
+        "nullifier": "0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "outputs": {
+        "bit_indices": "1271594,16912438,1901668,17542516,4483366,18172602,5113456,20754312,5743554,21384414,8325276,22014524,8955390,24596258,9585512,25226384,10215642,25856518,12797396,26486660",
+        "h1": "8238098025478871594",
+        "h2": "6457736140487340843"
+      }
+    },
+    "ecies_roundtrip": {
+      "description": "ECIES-X25519-ChaCha20-BLAKE3 deterministic encryption",
+      "inputs": {
+        "plaintext": "4f6368726120636f6e74656e74206b65792074657374",
+        "randomness": "0101010101010101010101010101010101010101010101010101010101010101",
+        "recipient_pk": "ce8d3ad1ccb633ec7b70c17814a5c76ecd029685050d344745ba05870e587d59"
+      },
+      "outputs": {
+        "ciphertext_and_tag": "bd950863b40423d4483c74d47cec8dfdd51a13046b03899856438fb32f3dbc270ffb925cf04b",
+        "eph_pk": "a4e09292b651c278b9772c569f5fa9bb13d906b46ab68c9df9dc2b4409f8a209"
+      }
+    },
+    "ed25519_rfc8032_test1": {
+      "description": "RFC 8032 Section 7.1 Test 1: all-zeros secret key, empty message",
+      "inputs": {
+        "message": "",
+        "secret_key": "0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "outputs": {
+        "public_key": "3b6a27bcceb6a42d62a3a8d02a6f0d73653215771de243a63ac048a18b59da29",
+        "signature": "8f895b3cafe2c9506039d0e2a66382568004674fe8d237785092e40d6aaf483e4fc60168705f31f101596138ce21aa357c0d32a064f423dc3ee4aa3abf53f803"
+      }
+    },
+    "hybrid_session_secret": {
+      "description": "Hybrid PQC session secret derivation",
+      "inputs": {
+        "mlkem768_shared": "0000000000000000000000000000000000000000000000000000000000000001",
+        "x25519_shared": "4a5d9d5ba4ce2de1728e3bf480350f25e07e21c947d19e3376f09b3c1e161742"
+      },
+      "outputs": {
+        "session_secret": "b161021938179dac3c564d493f54d2b781da37d5989dae79403bcdd437873126"
+      }
+    },
+    "node_id_derivation": {
+      "description": "Node ID = BLAKE3::hash(pik_public_key)",
+      "inputs": {
+        "pik_public_key": "3b6a27bcceb6a42d62a3a8d02a6f0d73653215771de243a63ac048a18b59da29"
+      },
+      "outputs": {
+        "node_id": "51f1365add907c3dcaead8fae90cfe55902638248377b4dd1db501b11554ac46"
+      }
+    },
+    "ratchet_chain_kdf": {
+      "description": "Double Ratchet chain KDF: KDF_CK(ck=0x00*32)",
+      "inputs": {
+        "ck": "0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "outputs": {
+        "msg_key": "767e1efce9499c4bb81f4042773e9ec16ff7f5809413b60ee15b27b58da6fb1b",
+        "new_ck": "9c3f24374890b6b471c7275658c40bfe3368df3902493cb177a5f2426b1da035"
+      }
+    },
+    "ratchet_root_kdf": {
+      "description": "Double Ratchet root KDF: KDF_RK(rk=0x00*32, dh_out=0xFF*32)",
+      "inputs": {
+        "dh_out": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "rk": "0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "outputs": {
+        "chain_key": "7c5b94ebde0e011c6186ab29de494f2ac5065db6703e66ec1a0632bd84beb55f",
+        "new_rk": "5b3f97c91d0dac15c14c3ad70f0eabc0da39003fb81ac2b323f1150986683923"
+      }
+    },
+    "receipt_id_derivation": {
+      "description": "receipt_id = BLAKE3::derive_key(\"Ochra v1 receipt-dht-address\", receipt_secret || content_hash || tier_index)",
+      "inputs": {
+        "content_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+        "receipt_secret": "0000000000000000000000000000000000000000000000000000000000000000",
+        "tier_index": "0"
+      },
+      "outputs": {
+        "receipt_id": "de37e6f7bd07c23cf077b771eb8b5ac70fcd04fd72ed6ac920e9e6cfed1e26d7"
+      }
+    }
+  }
+}

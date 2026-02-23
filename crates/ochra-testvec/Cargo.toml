@@ -1,0 +1,14 @@
+[package]
+name = "ochra-testvec"
+version.workspace = true
+edition.workspace = true
+
+[[bin]]
+name = "ochra-testvec"
+path = "src/main.rs"
+
+[dependencies]
+ochra-crypto = { path = "../ochra-crypto" }
+serde.workspace = true
+serde_json.workspace = true
+hex.workspace = true

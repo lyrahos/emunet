@@ -1,0 +1,92 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/ochra-crypto",
+    "crates/ochra-testvec",
+    "crates/ochra-types",
+    "crates/ochra-db",
+    "crates/ochra-transport",
+    "crates/ochra-dht",
+    "crates/ochra-invite",
+    "crates/ochra-storage",
+    "crates/ochra-onion",
+    "crates/ochra-mls",
+    "crates/ochra-posrv",
+    "crates/ochra-frost",
+    "crates/ochra-oracle",
+    "crates/ochra-mint",
+    "crates/ochra-nullifier",
+    "crates/ochra-vys",
+    "crates/ochra-pow",
+    "crates/ochra-spend",
+    "crates/ochra-revenue",
+    "crates/ochra-guardian",
+    "crates/ochra-daemon",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "Proprietary"
+repository = "https://github.com/ochra/ochra"
+
+[workspace.lints.clippy]
+unwrap_used = "deny"
+panic = "deny"
+todo = "warn"
+dbg_macro = "deny"
+
+[workspace.dependencies]
+# Cryptography
+ed25519-dalek = { version = "2", features = ["serde", "rand_core"] }
+x25519-dalek = { version = "2", features = ["serde", "static_secrets"] }
+chacha20poly1305 = "0.10"
+blake3 = "1"
+argon2 = "0.5"
+voprf = { version = "0.5", features = ["ristretto255"] }
+
+# ZK / BLS12-381
+ark-ff = "0.4"
+ark-ec = "0.4"
+ark-bls12-381 = "0.4"
+ark-groth16 = "0.4"
+ark-snark = "0.4"
+ark-relations = "0.4"
+ark-r1cs-std = "0.4"
+ark-crypto-primitives = { version = "0.4", features = ["snark"] }
+ark-std = "0.4"
+ark-serialize = "0.4"
+
+# FROST threshold signatures
+frost-ed25519 = "2"
+
+# Networking
+quinn = "0.11"
+rustls = { version = "0.23", features = ["ring"] }
+
+# Serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+ciborium = "0.2"
+
+# Database
+rusqlite = { version = "0.31", features = ["bundled"] }
+
+# Async
+tokio = { version = "1", features = ["full"] }
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Error handling
+thiserror = "2"
+anyhow = "1"
+
+# Misc
+rand = "0.8"
+rand_core = "0.6"
+hex = "0.4"
+base64 = "0.22"
+toml = "0.8"
+zeroize = { version = "1", features = ["derive"] }
