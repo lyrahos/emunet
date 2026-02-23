@@ -182,7 +182,7 @@ mod tests {
 
     #[test]
     fn test_check_mintable_throttled() {
-        let err = check_mintable(0.6, 1_000_000).unwrap_err();
+        let err = check_mintable(0.6, 1_000_000).expect_err("should be throttled");
         assert!(matches!(err, MintError::Throttled { .. }));
     }
 }

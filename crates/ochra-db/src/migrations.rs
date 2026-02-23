@@ -148,13 +148,14 @@ mod tests {
         ];
 
         for table in &expected_tables {
+            let msg = format!("table {table} check");
             let count: i64 = conn
                 .query_row(
                     "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=?1",
                     [table],
                     |row| row.get(0),
                 )
-                .unwrap_or_else(|_| panic!("table {table} check"));
+                .expect(&msg);
             assert_eq!(count, 1, "Table '{table}' should exist");
         }
     }

@@ -57,16 +57,16 @@ mod tests {
     fn export_ts_bindings() {
         use ts_rs::TS;
         let dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../bindings");
-        std::fs::create_dir_all(&dir).unwrap();
+        std::fs::create_dir_all(&dir).expect("create bindings dir");
         // Export all types
-        crate::events::Event::export_all_to(&dir).unwrap();
-        crate::identity::PikMeta::export_all_to(&dir).unwrap();
-        crate::space::GroupSummary::export_all_to(&dir).unwrap();
-        crate::content::ContentManifest::export_all_to(&dir).unwrap();
-        crate::whisper::HandleDescriptor::export_all_to(&dir).unwrap();
-        crate::network::ServiceReceipt::export_all_to(&dir).unwrap();
-        crate::governance::UpgradeManifest::export_all_to(&dir).unwrap();
-        crate::layout::LayoutConfig::export_all_to(&dir).unwrap();
-        crate::diagnostics::CircuitMetrics::export_all_to(&dir).unwrap();
+        crate::events::Event::export_all_to(&dir).expect("export Event");
+        crate::identity::PikMeta::export_all_to(&dir).expect("export PikMeta");
+        crate::space::GroupSummary::export_all_to(&dir).expect("export GroupSummary");
+        crate::content::ContentManifest::export_all_to(&dir).expect("export ContentManifest");
+        crate::whisper::HandleDescriptor::export_all_to(&dir).expect("export HandleDescriptor");
+        crate::network::ServiceReceipt::export_all_to(&dir).expect("export ServiceReceipt");
+        crate::governance::UpgradeManifest::export_all_to(&dir).expect("export UpgradeManifest");
+        crate::layout::LayoutConfig::export_all_to(&dir).expect("export LayoutConfig");
+        crate::diagnostics::CircuitMetrics::export_all_to(&dir).expect("export CircuitMetrics");
     }
 }
