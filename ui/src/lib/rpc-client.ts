@@ -1,18 +1,9 @@
 import { invoke } from "@tauri-apps/api/core";
 
-let requestId = 0;
-
-interface JsonRpcRequest {
-  jsonrpc: "2.0";
-  id: number;
-  method: string;
-  params?: unknown;
-}
-
-interface JsonRpcResponse<T = unknown> {
-  jsonrpc: "2.0";
-  id: number;
-  result?: T;
+/** Shape returned by the Tauri `ipc_request` command. */
+interface IpcResponse {
+  ok: boolean;
+  result?: unknown;
   error?: {
     code: number;
     message: string;
@@ -40,26 +31,18 @@ export async function rpcCall<T = unknown>(
   method: string,
   params?: unknown,
 ): Promise<T> {
-  const id = ++requestId;
-
-  const request: JsonRpcRequest = {
-    jsonrpc: "2.0",
-    id,
-    method,
-    params,
-  };
-
-  const raw = await invoke<string>("ipc_request", {
-    body: JSON.stringify(request),
+  // The Tauri command builds the JSON-RPC envelope itself;
+  // we only need to pass method + params.
+  const response = await invoke<IpcResponse>("ipc_request", {
+    request: { method, params: params ?? {} },
   });
 
-  const response: JsonRpcResponse<T> = JSON.parse(raw);
-
-  if (response.error) {
+  if (!response.ok || response.error) {
+    const err = response.error;
     throw new RpcError(
-      response.error.code,
-      response.error.message,
-      response.error.data,
+      err?.code ?? -1,
+      err?.message ?? "Unknown daemon error",
+      err?.data,
     );
   }
 
