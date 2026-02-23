@@ -23,12 +23,17 @@ pub async fn init_pik(state: &Arc<DaemonState>, params: &Value) -> Result {
     let keypair = ochra_crypto::ed25519::KeyPair::generate();
     let pik_hash = ochra_crypto::blake3::hash(keypair.verifying_key.as_bytes());
 
+    // Generate X25519 profile key for key exchange
+    let profile_secret = ochra_crypto::x25519::X25519StaticSecret::random();
+    let profile_key = profile_secret.public_key();
+
     // Encrypt PIK with password-derived key (Argon2id + ChaCha20-Poly1305)
     let salt = ochra_crypto::argon2id::generate_salt();
     let derived_key = ochra_crypto::argon2id::derive_pik_key(password.as_bytes(), &salt)
         .map_err(|e| RpcError::internal_error(&format!("key derivation failed: {e}")))?;
 
-    let nonce = [0u8; 12]; // Will use random nonce in production
+    let mut nonce = [0u8; 12];
+    rand::RngCore::fill_bytes(&mut rand::rngs::OsRng, &mut nonce);
     let encrypted_pik = ochra_crypto::chacha20::encrypt(
         &derived_key,
         &nonce,
@@ -41,15 +46,17 @@ pub async fn init_pik(state: &Arc<DaemonState>, params: &Value) -> Result {
     {
         let db = state.db.lock().await;
         db.execute(
-            "INSERT OR REPLACE INTO pik (id, encrypted_key, salt, argon2_params, created_at) VALUES (1, ?1, ?2, ?3, ?4)",
+            "INSERT OR REPLACE INTO pik (id, pik_hash, encrypted_private_key, argon2id_salt, argon2id_nonce, created_at, profile_key) VALUES (1, ?1, ?2, ?3, ?4, ?5, ?6)",
             rusqlite::params![
+                pik_hash.as_slice(),
                 encrypted_pik.as_slice(),
                 salt.as_slice(),
-                "m=262144,t=3,p=4",
+                nonce.as_slice(),
                 std::time::SystemTime::now()
                     .duration_since(std::time::UNIX_EPOCH)
                     .unwrap_or_default()
                     .as_secs() as i64,
+                profile_key.as_bytes().as_slice(),
             ],
         ).map_err(|e| RpcError::internal_error(&format!("db error: {e}")))?;
     }
@@ -75,13 +82,13 @@ pub async fn authenticate(state: &Arc<DaemonState>, params: &Value) -> Result {
 
     info!("Authenticating");
 
-    // Load encrypted PIK and salt from database
-    let (encrypted_key, salt): (Vec<u8>, Vec<u8>) = {
+    // Load encrypted PIK, salt, and nonce from database
+    let (encrypted_key, salt, nonce_bytes): (Vec<u8>, Vec<u8>, Vec<u8>) = {
         let db = state.db.lock().await;
         db.query_row(
-            "SELECT encrypted_key, salt FROM pik WHERE id = 1",
+            "SELECT encrypted_private_key, argon2id_salt, argon2id_nonce FROM pik WHERE id = 1",
             [],
-            |row| Ok((row.get(0)?, row.get(1)?)),
+            |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?)),
         )
         .map_err(|_| RpcError::pik_not_initialized())?
     };
@@ -93,7 +100,9 @@ pub async fn authenticate(state: &Arc<DaemonState>, params: &Value) -> Result {
     let derived_key = ochra_crypto::argon2id::derive_pik_key(password.as_bytes(), &salt_arr)
         .map_err(|_| RpcError::wrong_password())?;
 
-    let nonce = [0u8; 12];
+    let nonce: [u8; 12] = nonce_bytes
+        .try_into()
+        .map_err(|_| RpcError::internal_error("invalid nonce length"))?;
     let _decrypted = ochra_crypto::chacha20::decrypt(&derived_key, &nonce, &encrypted_key, &[])
         .map_err(|_| RpcError::wrong_password())?;
 
@@ -118,14 +127,12 @@ pub async fn authenticate_biometric(state: &Arc<DaemonState>) -> Result {
 pub async fn get_my_pik(state: &Arc<DaemonState>) -> Result {
     let db = state.db.lock().await;
     let pik_hash: Vec<u8> = db
-        .query_row("SELECT encrypted_key FROM pik WHERE id = 1", [], |row| {
+        .query_row("SELECT pik_hash FROM pik WHERE id = 1", [], |row| {
             row.get(0)
         })
         .map_err(|_| RpcError::pik_not_initialized())?;
 
-    // Return hash of the encrypted key as identifier
-    let hash = ochra_crypto::blake3::hash(&pik_hash);
-    Ok(serde_json::json!({"pik_hash": hex::encode(hash)}))
+    Ok(serde_json::json!({"pik_hash": hex::encode(pik_hash)}))
 }
 
 /// Change password.

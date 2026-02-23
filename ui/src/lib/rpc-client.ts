@@ -33,9 +33,17 @@ export async function rpcCall<T = unknown>(
 ): Promise<T> {
   // The Tauri command builds the JSON-RPC envelope itself;
   // we only need to pass method + params.
-  const response = await invoke<IpcResponse>("ipc_request", {
-    request: { method, params: params ?? {} },
-  });
+  let response: IpcResponse;
+  try {
+    response = await invoke<IpcResponse>("ipc_request", {
+      request: { method, params: params ?? {} },
+    });
+  } catch (err) {
+    // Tauri rejects with a plain string when the bridge itself fails
+    // (e.g. daemon not running, socket not found).
+    const msg = typeof err === "string" ? err : (err as Error).message ?? String(err);
+    throw new RpcError(-1, msg);
+  }
 
   if (!response.ok || response.error) {
     const err = response.error;
