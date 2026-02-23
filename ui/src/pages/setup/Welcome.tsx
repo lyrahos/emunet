@@ -26,12 +26,12 @@ export default function Welcome() {
     if (!canProceed) return;
     setError("");
 
-    const result = await call("create_identity", {
-      display_name: name.trim(),
-      password,
-    });
+    const result = await call("init_pik", { password });
 
     if (result) {
+      // Session is now unlocked — save display name
+      await call("update_display_name", { new_name: name.trim() });
+
       setAuth({
         unlocked: true,
         displayName: name.trim(),
