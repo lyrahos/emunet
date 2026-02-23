@@ -53,8 +53,8 @@ pub struct IpcResponse {
 /// The frontend calls this via `invoke("ipc_request", { request: { method, params } })`.
 #[tauri::command]
 async fn ipc_request(request: IpcRequest) -> Result<IpcResponse, String> {
-    let socket_path = std::env::var("OCHRA_SOCKET_PATH")
-        .unwrap_or_else(|_| DEFAULT_SOCKET_PATH.to_string());
+    let socket_path =
+        std::env::var("OCHRA_SOCKET_PATH").unwrap_or_else(|_| DEFAULT_SOCKET_PATH.to_string());
 
     let rpc_request = serde_json::json!({
         "jsonrpc": "2.0",

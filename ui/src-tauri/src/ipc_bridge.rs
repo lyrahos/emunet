@@ -27,7 +27,10 @@ pub async fn send_rpc_request(
 ) -> Result<serde_json::Value, IpcBridgeError> {
     // Connect to the daemon socket.
     let stream = UnixStream::connect(socket_path).await.map_err(|e| {
-        error!("Failed to connect to daemon socket at {}: {}", socket_path, e);
+        error!(
+            "Failed to connect to daemon socket at {}: {}",
+            socket_path, e
+        );
         IpcBridgeError::ConnectionFailed {
             path: socket_path.to_string(),
             source: e.to_string(),
@@ -40,9 +43,8 @@ pub async fn send_rpc_request(
     let mut reader = BufReader::new(reader);
 
     // Serialize the request to a single line of JSON, terminated by newline.
-    let mut request_json = serde_json::to_string(request).map_err(|e| {
-        IpcBridgeError::SerializationFailed(e.to_string())
-    })?;
+    let mut request_json = serde_json::to_string(request)
+        .map_err(|e| IpcBridgeError::SerializationFailed(e.to_string()))?;
     request_json.push('\n');
 
     // Send the request.
@@ -53,21 +55,19 @@ pub async fn send_rpc_request(
             error!("Failed to write request to daemon: {}", e);
             IpcBridgeError::WriteFailed(e.to_string())
         })?;
-    writer.flush().await.map_err(|e| {
-        IpcBridgeError::WriteFailed(e.to_string())
-    })?;
+    writer
+        .flush()
+        .await
+        .map_err(|e| IpcBridgeError::WriteFailed(e.to_string()))?;
 
     debug!("Sent RPC request to daemon");
 
     // Read the response (one line).
     let mut response_line = String::new();
-    let bytes_read = reader
-        .read_line(&mut response_line)
-        .await
-        .map_err(|e| {
-            error!("Failed to read response from daemon: {}", e);
-            IpcBridgeError::ReadFailed(e.to_string())
-        })?;
+    let bytes_read = reader.read_line(&mut response_line).await.map_err(|e| {
+        error!("Failed to read response from daemon: {}", e);
+        IpcBridgeError::ReadFailed(e.to_string())
+    })?;
 
     if bytes_read == 0 {
         return Err(IpcBridgeError::DaemonDisconnected);
@@ -92,10 +92,7 @@ pub async fn send_rpc_request(
 pub enum IpcBridgeError {
     /// Failed to connect to the daemon socket.
     #[error("Failed to connect to daemon at '{path}': {source}")]
-    ConnectionFailed {
-        path: String,
-        source: String,
-    },
+    ConnectionFailed { path: String, source: String },
 
     /// Failed to serialize the request.
     #[error("Failed to serialize RPC request: {0}")]
@@ -115,9 +112,5 @@ pub enum IpcBridgeError {
 
     /// Failed to parse the daemon's response as JSON.
     #[error("Failed to parse daemon response: {source} (raw: {raw})")]
-    ParseFailed {
-        source: String,
-        raw: String,
-    },
+    ParseFailed { source: String, raw: String },
 }
-
