@@ -200,7 +200,7 @@ fn generate_hybrid_session_vector() -> BTreeMap<String, TestVector> {
             description: "Hybrid PQC session secret derivation".to_string(),
             inputs: BTreeMap::from([
                 ("x25519_shared".to_string(), hex::encode(&x25519_shared)),
-                ("mlkem768_shared".to_string(), hex::encode(&mlkem_bytes)),
+                ("mlkem768_shared".to_string(), hex::encode(mlkem_bytes)),
             ]),
             outputs: BTreeMap::from([("session_secret".to_string(), hex::encode(session_secret))]),
         },

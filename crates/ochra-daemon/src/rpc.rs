@@ -18,6 +18,7 @@ use crate::DaemonState;
 #[derive(Debug, Deserialize)]
 pub struct RpcRequest {
     /// JSON-RPC version (must be "2.0").
+    #[allow(dead_code)]
     pub jsonrpc: String,
     /// Request ID.
     pub id: serde_json::Value,
@@ -89,6 +90,7 @@ impl RpcError {
     }
 
     /// Invalid request (-32600).
+    #[allow(dead_code)]
     pub fn invalid_request() -> Self {
         Self {
             code: -32600,
@@ -161,6 +163,7 @@ impl RpcError {
     }
 
     /// Not host (-32060).
+    #[allow(dead_code)]
     pub fn not_host() -> Self {
         Self {
             code: -32060,

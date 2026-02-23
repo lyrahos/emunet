@@ -22,6 +22,7 @@ pub struct Event {
 }
 
 /// Filter for event subscriptions.
+#[allow(dead_code)]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EventFilter {
     /// Category filter: "space", "economy", "system", "whisper".
@@ -33,6 +34,7 @@ pub struct EventFilter {
 }
 
 /// A subscription handle.
+#[allow(dead_code)]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SubscriptionId(pub String);
 
@@ -73,6 +75,7 @@ impl EventBus {
 
 impl EventFilter {
     /// Check if an event matches this filter.
+    #[allow(dead_code)]
     pub fn matches(&self, event: &Event) -> bool {
         // Category filter
         if let Some(ref categories) = self.categories {
@@ -96,6 +99,7 @@ impl EventFilter {
 }
 
 /// Categorize an event type into a category.
+#[allow(dead_code)]
 fn categorize_event(event_type: &str) -> String {
     match event_type {
         s if s.starts_with("Member")

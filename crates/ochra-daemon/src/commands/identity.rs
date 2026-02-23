@@ -129,7 +129,7 @@ pub async fn get_my_pik(state: &Arc<DaemonState>) -> Result {
 }
 
 /// Change password.
-pub async fn change_password(state: &Arc<DaemonState>, params: &Value) -> Result {
+pub async fn change_password(_state: &Arc<DaemonState>, params: &Value) -> Result {
     let _old = params
         .get("old")
         .and_then(|v| v.as_str())

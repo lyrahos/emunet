@@ -9,11 +9,10 @@ mod epoch;
 mod events;
 mod rpc;
 
-use std::path::PathBuf;
 use std::sync::Arc;
 
-use tokio::sync::{broadcast, mpsc, RwLock};
-use tracing::{error, info, warn};
+use tokio::sync::{broadcast, RwLock};
+use tracing::{error, info};
 
 use crate::config::DaemonConfig;
 use crate::events::EventBus;
@@ -53,11 +52,7 @@ async fn main() -> anyhow::Result<()> {
 
     // 2. Open database
     let db_path = data_dir.join("ochra.db");
-    let conn = if db_path.exists() {
-        ochra_db::open(&db_path)?
-    } else {
-        ochra_db::open(&db_path)?
-    };
+    let conn = ochra_db::open(&db_path)?;
     let db = Arc::new(tokio::sync::Mutex::new(conn));
 
     // 3. Create event bus

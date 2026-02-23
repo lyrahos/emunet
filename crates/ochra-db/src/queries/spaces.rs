@@ -2,7 +2,7 @@
 
 use rusqlite::Connection;
 
-use crate::{DbError, Result};
+use crate::Result;
 
 /// Insert a new space.
 pub fn insert(

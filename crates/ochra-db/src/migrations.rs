@@ -68,14 +68,12 @@ fn insert_default_settings(conn: &Connection) -> Result<()> {
 }
 
 /// Run a specific migration.
-fn run_migration(conn: &Connection, version: u32) -> Result<()> {
-    match version {
-        // Future migrations go here:
-        // 2 => migration_v2(conn),
-        _ => Err(DbError::Migration(format!(
-            "Unknown migration version: {version}"
-        ))),
-    }
+fn run_migration(_conn: &Connection, version: u32) -> Result<()> {
+    // Future migrations go here:
+    // 2 => migration_v2(conn),
+    Err(DbError::Migration(format!(
+        "Unknown migration version: {version}"
+    )))
 }
 
 #[cfg(test)]

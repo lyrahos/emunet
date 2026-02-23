@@ -56,7 +56,7 @@ pub fn dkg(
     max_signers: u16,
     min_signers: u16,
 ) -> Result<(Vec<FrostKeyPackage>, FrostPublicKeyPackage)> {
-    let mut rng = OsRng;
+    let rng = OsRng;
 
     // Use the trusted dealer key generation for simplicity in v1
     // (Production should use the 3-round DKG from Section 12.6)
@@ -64,7 +64,7 @@ pub fn dkg(
         max_signers,
         min_signers,
         frost::keys::IdentifierList::Default,
-        &mut rng,
+        rng,
     )
     .map_err(|e| CryptoError::Frost(e.to_string()))?;
 
