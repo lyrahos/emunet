@@ -33,7 +33,7 @@ pub async fn send_rpc_request(
         );
         IpcBridgeError::ConnectionFailed {
             path: socket_path.to_string(),
-            source: e.to_string(),
+            reason: e.to_string(),
         }
     })?;
 
@@ -77,7 +77,7 @@ pub async fn send_rpc_request(
     let response: serde_json::Value = serde_json::from_str(&response_line).map_err(|e| {
         error!("Failed to parse daemon response: {}", e);
         IpcBridgeError::ParseFailed {
-            source: e.to_string(),
+            reason: e.to_string(),
             raw: response_line.clone(),
         }
     })?;
@@ -91,8 +91,8 @@ pub async fn send_rpc_request(
 #[derive(Debug, thiserror::Error)]
 pub enum IpcBridgeError {
     /// Failed to connect to the daemon socket.
-    #[error("Failed to connect to daemon at '{path}': {source}")]
-    ConnectionFailed { path: String, source: String },
+    #[error("Failed to connect to daemon at '{path}': {reason}")]
+    ConnectionFailed { path: String, reason: String },
 
     /// Failed to serialize the request.
     #[error("Failed to serialize RPC request: {0}")]
@@ -111,6 +111,6 @@ pub enum IpcBridgeError {
     DaemonDisconnected,
 
     /// Failed to parse the daemon's response as JSON.
-    #[error("Failed to parse daemon response: {source} (raw: {raw})")]
-    ParseFailed { source: String, raw: String },
+    #[error("Failed to parse daemon response: {reason} (raw: {raw})")]
+    ParseFailed { reason: String, raw: String },
 }
