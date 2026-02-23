@@ -43,3 +43,30 @@ pub const MAX_CONTENT_TAGS: usize = 5;
 
 /// Maximum hops in Sphinx circuit.
 pub const SPHINX_HOPS: usize = 3;
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn test_ts_export() {
+        // This test just verifies the TS types can be generated without panicking.
+        // Run `cargo test -p ochra-types -- --ignored export_ts_bindings` to write files.
+    }
+
+    #[test]
+    #[ignore] // Run manually to generate bindings
+    fn export_ts_bindings() {
+        use ts_rs::TS;
+        let dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../bindings");
+        std::fs::create_dir_all(&dir).unwrap();
+        // Export all types
+        crate::events::Event::export_all_to(&dir).unwrap();
+        crate::identity::PikMeta::export_all_to(&dir).unwrap();
+        crate::space::GroupSummary::export_all_to(&dir).unwrap();
+        crate::content::ContentManifest::export_all_to(&dir).unwrap();
+        crate::whisper::HandleDescriptor::export_all_to(&dir).unwrap();
+        crate::network::ServiceReceipt::export_all_to(&dir).unwrap();
+        crate::governance::UpgradeManifest::export_all_to(&dir).unwrap();
+        crate::layout::LayoutConfig::export_all_to(&dir).unwrap();
+        crate::diagnostics::CircuitMetrics::export_all_to(&dir).unwrap();
+    }
+}

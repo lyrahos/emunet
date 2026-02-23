@@ -6,7 +6,8 @@ use serde_with::serde_as;
 use crate::Hash;
 
 /// Revenue split (Section 22.8).
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
 pub struct RevenueSplit {
     pub owner_pct: u8,
     pub pub_pct: u8,
@@ -15,7 +16,8 @@ pub struct RevenueSplit {
 }
 
 /// Upgrade manifest (Section 22.8).
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
 pub struct UpgradeManifest {
     /// Semver, e.g. "5.2.0".
     pub version: String,
@@ -30,14 +32,17 @@ pub struct UpgradeManifest {
 }
 
 /// Platform-specific binary hash (Section 22.8).
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
 pub struct PlatformHash {
     pub platform: Platform,
+    #[ts(type = "string")]
     pub blake3_hash: Hash,
     pub size_bytes: u64,
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
 #[serde(rename_all = "kebab-case")]
 pub enum Platform {
     MacosArm64,
@@ -50,16 +55,19 @@ pub enum Platform {
 
 /// Multisig entry (Section 22.8).
 #[serde_as]
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
 pub struct MultisigEntry {
     /// Keyholder index (0-4).
     pub keyholder_index: u8,
     #[serde_as(as = "serde_with::Bytes")]
+    #[ts(type = "string")]
     pub sig: [u8; 64],
 }
 
 /// Rollback manifest (Section 22.8).
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
 pub struct RollbackManifest {
     /// Version to rollback to.
     pub target_version: String,
@@ -71,20 +79,23 @@ pub struct RollbackManifest {
 }
 
 /// Genesis manifest (Section 22.8).
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
 pub struct GenesisManifest {
     pub genesis_epoch: u64,
     /// 1,000,000 Seeds in micro-seeds.
     pub total_supply: u64,
     pub allocations: Vec<GenesisAllocation>,
     /// Published for transparency.
+    #[ts(type = "string[]")]
     pub nullifiers: Vec<[u8; 32]>,
     /// 5-of-5.
     pub multisig_sigs: Vec<MultisigEntry>,
 }
 
 /// Genesis allocation (Section 22.8).
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
 pub struct GenesisAllocation {
     pub name: String,
     /// In micro-seeds.

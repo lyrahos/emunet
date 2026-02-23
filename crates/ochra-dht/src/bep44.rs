@@ -98,7 +98,7 @@ impl DhtRecord {
             } => {
                 // Verify the Ed25519 signature over (salt || seq || value).
                 let vk = ochra_crypto::ed25519::VerifyingKey::from_bytes(public_key)
-                    .map_err(|e| DhtError::Crypto(e))?;
+                    .map_err(DhtError::Crypto)?;
                 let sig = ochra_crypto::ed25519::Signature::from_bytes(signature);
 
                 let signed_data = build_signed_data(salt, *seq, value);

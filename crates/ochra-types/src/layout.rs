@@ -5,7 +5,8 @@ use serde::{Deserialize, Serialize};
 use crate::ContentHash;
 
 /// Layout configuration for a Space (Section 22.9).
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
 pub struct LayoutConfig {
     pub layout_type: super::space::SpaceTemplate,
     pub sections: Vec<LayoutSection>,
@@ -14,7 +15,8 @@ pub struct LayoutConfig {
 }
 
 /// Layout section (Section 22.9).
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
 pub struct LayoutSection {
     pub section_type: SectionType,
     pub title: Option<String>,
@@ -22,7 +24,8 @@ pub struct LayoutSection {
     pub filter_tags: Option<Vec<String>>,
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub enum SectionType {
     Hero,
@@ -33,7 +36,8 @@ pub enum SectionType {
 }
 
 /// Rendered layout for the UI (Section 22.9).
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
 pub struct RenderableLayout {
     pub layout_type: super::space::SpaceTemplate,
     pub rendered_sections: Vec<RenderedSection>,
@@ -41,15 +45,18 @@ pub struct RenderableLayout {
 }
 
 /// Rendered section (Section 22.9).
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
 pub struct RenderedSection {
     pub section_type: SectionType,
     pub title: Option<String>,
+    #[ts(type = "string[]")]
     pub content_hashes: Vec<ContentHash>,
 }
 
 /// Notification settings (Section 22.9).
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
 pub struct NotificationSettings {
     pub mute_all: bool,
     /// Unix timestamp.
@@ -60,8 +67,10 @@ pub struct NotificationSettings {
 }
 
 /// Download progress (Section 22.9).
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
 pub struct DownloadProgress {
+    #[ts(type = "string")]
     pub content_hash: ContentHash,
     pub total_bytes: u64,
     pub downloaded_bytes: u64,
@@ -71,7 +80,8 @@ pub struct DownloadProgress {
     pub error: Option<String>,
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub enum DownloadState {
     Downloading,

@@ -74,7 +74,7 @@ pub fn split_record(value: &[u8]) -> Vec<Chunk> {
         }];
     }
 
-    let chunks_needed = (value.len() + CHUNK_DATA_SIZE - 1) / CHUNK_DATA_SIZE;
+    let chunks_needed = value.len().div_ceil(CHUNK_DATA_SIZE);
     let total = chunks_needed as u32;
 
     let mut chunks = Vec::with_capacity(chunks_needed);

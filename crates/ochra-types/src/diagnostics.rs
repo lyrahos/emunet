@@ -5,7 +5,8 @@ use serde::{Deserialize, Serialize};
 use crate::Hash;
 
 /// Circuit metrics (Section 22.5).
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
 pub struct CircuitMetrics {
     pub active_circuits: u32,
     pub circuits_rotated_24h: u32,
@@ -14,7 +15,8 @@ pub struct CircuitMetrics {
     pub nat_traversal_status: NatStatus,
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub enum NatStatus {
     Direct,
@@ -23,7 +25,8 @@ pub enum NatStatus {
 }
 
 /// Cover traffic metrics (Section 22.5).
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
 pub struct CoverTrafficMetrics {
     pub current_mode: CoverTrafficMode,
     pub lambda_p: f64,
@@ -33,7 +36,8 @@ pub struct CoverTrafficMetrics {
     pub mode_dwell_remaining_s: u32,
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub enum CoverTrafficMode {
     Sleep,
@@ -43,17 +47,20 @@ pub enum CoverTrafficMode {
 }
 
 /// Update status (Section 22.5).
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
 pub struct UpdateStatus {
     pub current_version: String,
     pub available_version: Option<String>,
+    #[ts(type = "string | null")]
     pub manifest_hash: Option<Hash>,
     pub activation_epoch: Option<u64>,
     pub is_mandatory: bool,
 }
 
 /// Log entry (Section 22.5).
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
 pub struct LogEntry {
     pub timestamp: u64,
     pub level: LogLevel,
@@ -61,7 +68,8 @@ pub struct LogEntry {
     pub message: String,
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub enum LogLevel {
     Debug,
@@ -71,7 +79,8 @@ pub enum LogLevel {
 }
 
 /// PoR submission status (Section 22.5).
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
 pub struct PorSubmissionStatus {
     pub status: PorStatus,
     pub epoch: u64,
@@ -79,7 +88,8 @@ pub struct PorSubmissionStatus {
     pub proving_time_ms: u32,
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub enum PorStatus {
     Submitted,
