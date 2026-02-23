@@ -7,4 +7,7 @@ edition.workspace = true
 workspace = true
 
 [dependencies]
+ochra-types = { path = "../ochra-types" }
 thiserror.workspace = true
+serde.workspace = true
+tracing.workspace = true

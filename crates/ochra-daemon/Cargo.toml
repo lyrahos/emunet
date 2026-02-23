@@ -7,5 +7,36 @@ edition.workspace = true
 workspace = true
 
 [dependencies]
+# Internal crates
+ochra-crypto = { path = "../ochra-crypto" }
+ochra-types = { path = "../ochra-types" }
+ochra-db = { path = "../ochra-db" }
+ochra-transport = { path = "../ochra-transport" }
+ochra-dht = { path = "../ochra-dht" }
+ochra-onion = { path = "../ochra-onion" }
+ochra-storage = { path = "../ochra-storage" }
+ochra-invite = { path = "../ochra-invite" }
+ochra-mls = { path = "../ochra-mls" }
+ochra-posrv = { path = "../ochra-posrv" }
+ochra-frost = { path = "../ochra-frost" }
+ochra-oracle = { path = "../ochra-oracle" }
+ochra-mint = { path = "../ochra-mint" }
+ochra-nullifier = { path = "../ochra-nullifier" }
+ochra-vys = { path = "../ochra-vys" }
+ochra-pow = { path = "../ochra-pow" }
+ochra-spend = { path = "../ochra-spend" }
+ochra-revenue = { path = "../ochra-revenue" }
+ochra-guardian = { path = "../ochra-guardian" }
+
+# External
 tokio.workspace = true
+serde.workspace = true
+serde_json.workspace = true
 anyhow.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+toml.workspace = true
+rand.workspace = true
+rusqlite.workspace = true
+hex.workspace = true
