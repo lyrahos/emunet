@@ -893,10 +893,7 @@ mod tests {
         assert_eq!(GoodbyeReason::from_u8(0), GoodbyeReason::Normal);
         assert_eq!(GoodbyeReason::from_u8(1), GoodbyeReason::ProtocolViolation);
         assert_eq!(GoodbyeReason::from_u8(2), GoodbyeReason::Timeout);
-        assert_eq!(
-            GoodbyeReason::from_u8(3),
-            GoodbyeReason::TooManyConnections
-        );
+        assert_eq!(GoodbyeReason::from_u8(3), GoodbyeReason::TooManyConnections);
         assert_eq!(GoodbyeReason::from_u8(4), GoodbyeReason::AuthFailure);
         assert_eq!(GoodbyeReason::from_u8(99), GoodbyeReason::Other);
         assert_eq!(GoodbyeReason::from_u8(255), GoodbyeReason::Other);

@@ -246,7 +246,10 @@ async fn dispatch_request(state: Arc<DaemonState>, request: RpcRequest) -> RpcRe
     debug!("Dispatching RPC method: {}", method);
 
     // Check if method requires authentication
-    let requires_auth = !matches!(method, "init_pik" | "authenticate" | "authenticate_biometric");
+    let requires_auth = !matches!(
+        method,
+        "init_pik" | "authenticate" | "authenticate_biometric"
+    );
 
     if requires_auth {
         let unlocked = state.unlocked.read().await;
@@ -254,7 +257,10 @@ async fn dispatch_request(state: Arc<DaemonState>, request: RpcRequest) -> RpcRe
             // Allow some diagnostic commands even when locked
             if !matches!(
                 method,
-                "get_daemon_logs" | "export_diagnostics" | "lock_session" | "check_protocol_updates"
+                "get_daemon_logs"
+                    | "export_diagnostics"
+                    | "lock_session"
+                    | "check_protocol_updates"
             ) {
                 return RpcResponse::error(id, RpcError::session_locked());
             }
@@ -279,9 +285,7 @@ async fn dispatch_request(state: Arc<DaemonState>, request: RpcRequest) -> RpcRe
         "nominate_guardian" => commands::identity::nominate_guardian(&state, &request.params).await,
         "replace_guardian" => commands::identity::replace_guardian(&state, &request.params).await,
         "get_guardian_health" => commands::identity::get_guardian_health(&state).await,
-        "initiate_recovery" => {
-            commands::identity::initiate_recovery(&state, &request.params).await
-        }
+        "initiate_recovery" => commands::identity::initiate_recovery(&state, &request.params).await,
         "veto_recovery" => commands::identity::veto_recovery(&state, &request.params).await,
         "add_contact" => commands::identity::add_contact(&state, &request.params).await,
         "remove_contact" => commands::identity::remove_contact(&state, &request.params).await,
@@ -298,7 +302,9 @@ async fn dispatch_request(state: Arc<DaemonState>, request: RpcRequest) -> RpcRe
         "kick_member" => commands::network::kick_member(&state, &request.params).await,
         "generate_invite" => commands::network::generate_invite(&state, &request.params).await,
         "revoke_invite" => commands::network::revoke_invite(&state, &request.params).await,
-        "get_active_invites" => commands::network::get_active_invites(&state, &request.params).await,
+        "get_active_invites" => {
+            commands::network::get_active_invites(&state, &request.params).await
+        }
         "get_group_members" => commands::network::get_group_members(&state, &request.params).await,
         "grant_publisher_role" => {
             commands::network::grant_publisher_role(&state, &request.params).await
@@ -395,9 +401,7 @@ async fn dispatch_request(state: Arc<DaemonState>, request: RpcRequest) -> RpcRe
             commands::file_io::redownload_content(&state, &request.params).await
         }
         "get_purchase_receipts" => commands::file_io::get_purchase_receipts(&state).await,
-        "get_access_status" => {
-            commands::file_io::get_access_status(&state, &request.params).await
-        }
+        "get_access_status" => commands::file_io::get_access_status(&state, &request.params).await,
         "download_file" => commands::file_io::download_file(&state, &request.params).await,
         "pause_download" => commands::file_io::pause_download(&state, &request.params).await,
         "get_abr_telemetry" => commands::file_io::get_abr_telemetry(&state).await,
@@ -447,13 +451,17 @@ async fn dispatch_request(state: Arc<DaemonState>, request: RpcRequest) -> RpcRe
         "lock_session" => commands::diagnostics::lock_session(&state).await,
 
         // Event subscription (Section 21.7)
-        "subscribe_events" => commands::diagnostics::subscribe_events(&state, &request.params).await,
+        "subscribe_events" => {
+            commands::diagnostics::subscribe_events(&state, &request.params).await
+        }
         "unsubscribe_events" => {
             commands::diagnostics::unsubscribe_events(&state, &request.params).await
         }
 
         // Dev-only commands
-        "dev_set_oracle_rate" => commands::economy::dev_set_oracle_rate(&state, &request.params).await,
+        "dev_set_oracle_rate" => {
+            commands::economy::dev_set_oracle_rate(&state, &request.params).await
+        }
 
         _ => Err(RpcError::method_not_found(method)),
     };
@@ -483,20 +491,14 @@ mod tests {
 
     #[test]
     fn test_rpc_response_success() {
-        let resp = RpcResponse::success(
-            serde_json::json!(1),
-            serde_json::json!({"balance": 1000}),
-        );
+        let resp = RpcResponse::success(serde_json::json!(1), serde_json::json!({"balance": 1000}));
         assert!(resp.result.is_some());
         assert!(resp.error.is_none());
     }
 
     #[test]
     fn test_rpc_response_error() {
-        let resp = RpcResponse::error(
-            serde_json::json!(1),
-            RpcError::internal_error("test"),
-        );
+        let resp = RpcResponse::error(serde_json::json!(1), RpcError::internal_error("test"));
         assert!(resp.result.is_none());
         assert!(resp.error.is_some());
     }

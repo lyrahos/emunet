@@ -29,8 +29,13 @@ pub async fn init_pik(state: &Arc<DaemonState>, params: &Value) -> Result {
         .map_err(|e| RpcError::internal_error(&format!("key derivation failed: {e}")))?;
 
     let nonce = [0u8; 12]; // Will use random nonce in production
-    let encrypted_pik = ochra_crypto::chacha20::encrypt(&derived_key, &nonce, keypair.signing_key.to_bytes().as_slice(), &[])
-        .map_err(|e| RpcError::internal_error(&format!("encryption failed: {e}")))?;
+    let encrypted_pik = ochra_crypto::chacha20::encrypt(
+        &derived_key,
+        &nonce,
+        keypair.signing_key.to_bytes().as_slice(),
+        &[],
+    )
+    .map_err(|e| RpcError::internal_error(&format!("encryption failed: {e}")))?;
 
     // Store in database
     {

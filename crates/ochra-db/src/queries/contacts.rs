@@ -43,9 +43,7 @@ pub fn get(conn: &Connection, pik_hash: &[u8; 32]) -> Result<ContactRow> {
         },
     )
     .map_err(|e| match e {
-        rusqlite::Error::QueryReturnedNoRows => {
-            DbError::NotFound("contact".into())
-        }
+        rusqlite::Error::QueryReturnedNoRows => DbError::NotFound("contact".into()),
         other => DbError::Sqlite(other),
     })
 }

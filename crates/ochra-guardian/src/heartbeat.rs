@@ -63,10 +63,7 @@ pub fn publish_heartbeat(guardian_id: [u8; 32], timestamp: u64) -> Heartbeat {
     // Stub signature in v1
     let signature = [0u8; 64];
 
-    tracing::debug!(
-        timestamp,
-        "guardian heartbeat published"
-    );
+    tracing::debug!(timestamp, "guardian heartbeat published");
 
     Heartbeat {
         guardian_id,
@@ -120,31 +117,19 @@ mod tests {
 
     #[test]
     fn test_check_heartbeat_healthy() {
-        let status = check_heartbeat(
-            &[0x01; 32],
-            1_000_000,
-            1_000_000 + WARNING_AGE - 1,
-        );
+        let status = check_heartbeat(&[0x01; 32], 1_000_000, 1_000_000 + WARNING_AGE - 1);
         assert_eq!(status, HealthStatus::Healthy);
     }
 
     #[test]
     fn test_check_heartbeat_warning() {
-        let status = check_heartbeat(
-            &[0x01; 32],
-            1_000_000,
-            1_000_000 + WARNING_AGE + 1,
-        );
+        let status = check_heartbeat(&[0x01; 32], 1_000_000, 1_000_000 + WARNING_AGE + 1);
         assert_eq!(status, HealthStatus::Warning);
     }
 
     #[test]
     fn test_check_heartbeat_unresponsive() {
-        let status = check_heartbeat(
-            &[0x01; 32],
-            1_000_000,
-            1_000_000 + MAX_HEARTBEAT_AGE + 1,
-        );
+        let status = check_heartbeat(&[0x01; 32], 1_000_000, 1_000_000 + MAX_HEARTBEAT_AGE + 1);
         assert_eq!(status, HealthStatus::Unresponsive);
     }
 

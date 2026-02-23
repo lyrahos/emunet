@@ -48,7 +48,8 @@ pub const EPH_PK_SIZE: usize = 32;
 pub const ROUTING_INFO_SIZE: usize = 83;
 
 /// Header size (version + flags + eph_pks + routing_infos + mac + reserved).
-pub const HEADER_SIZE: usize = 1 + 1 + (NUM_HOPS * EPH_PK_SIZE) + (NUM_HOPS * ROUTING_INFO_SIZE) + 16 + 17; // 380
+pub const HEADER_SIZE: usize =
+    1 + 1 + (NUM_HOPS * EPH_PK_SIZE) + (NUM_HOPS * ROUTING_INFO_SIZE) + 16 + 17; // 380
 
 /// Encrypted payload size (packet minus header).
 pub const PAYLOAD_SIZE: usize = PACKET_SIZE - HEADER_SIZE; // 7812
@@ -246,8 +247,7 @@ pub fn build_packet(params: SphinxBuildParams) -> Result<SphinxPacket, Transport
             let block = ob3::keyed_hash(&pad_material, &ctr.to_le_bytes());
             let remaining = MAX_PLAINTEXT_SIZE - pad_offset;
             let copy_len = remaining.min(32);
-            padded_plaintext[pad_offset..pad_offset + copy_len]
-                .copy_from_slice(&block[..copy_len]);
+            padded_plaintext[pad_offset..pad_offset + copy_len].copy_from_slice(&block[..copy_len]);
             pad_offset += copy_len;
             ctr = ctr.wrapping_add(1);
         }
@@ -430,19 +430,12 @@ pub fn process_packet(
 
     // Extract our routing info
     let ri_start = OFF_ROUTING + hop_index * ROUTING_INFO_SIZE;
-    let routing_info = HopInfo::from_bytes(
-        &packet.data[ri_start..ri_start + ROUTING_INFO_SIZE],
-    )?;
+    let routing_info = HopInfo::from_bytes(&packet.data[ri_start..ri_start + ROUTING_INFO_SIZE])?;
 
     // Decrypt one layer of the payload
     let encrypted_payload = &packet.data[OFF_PAYLOAD..];
-    let decrypted = chacha20::decrypt(
-        &keys.hop_key,
-        &keys.hop_nonce,
-        encrypted_payload,
-        &[],
-    )
-    .map_err(|e| TransportError::Crypto(e.to_string()))?;
+    let decrypted = chacha20::decrypt(&keys.hop_key, &keys.hop_nonce, encrypted_payload, &[])
+        .map_err(|e| TransportError::Crypto(e.to_string()))?;
 
     if hop_index == NUM_HOPS - 1 {
         // Final hop: return the plaintext
@@ -472,8 +465,7 @@ pub fn process_packet(
                 let block = ob3::keyed_hash(&pad_key, &ctr.to_le_bytes());
                 let remaining = PAYLOAD_SIZE - pad_offset;
                 let cl = remaining.min(32);
-                new_payload_area[pad_offset..pad_offset + cl]
-                    .copy_from_slice(&block[..cl]);
+                new_payload_area[pad_offset..pad_offset + cl].copy_from_slice(&block[..cl]);
                 pad_offset += cl;
                 ctr = ctr.wrapping_add(1);
             }
@@ -531,10 +523,7 @@ pub fn validate_packet(data: &[u8]) -> Result<(), TransportError> {
 ///
 /// Returns [`TransportError::InvalidPacket`] if the index is out of range or
 /// the packet is too small.
-pub fn extract_routing_info(
-    data: &[u8],
-    hop_index: usize,
-) -> Result<HopInfo, TransportError> {
+pub fn extract_routing_info(data: &[u8], hop_index: usize) -> Result<HopInfo, TransportError> {
     if data.len() < HEADER_SIZE {
         return Err(TransportError::InvalidPacket(
             "packet too small for header".to_string(),
@@ -607,7 +596,11 @@ mod tests {
         let hop_pubs: Vec<_> = hop_keys.iter().map(|k| k.public_key()).collect();
 
         let params = SphinxBuildParams {
-            hop_public_keys: [hop_pubs[0].clone(), hop_pubs[1].clone(), hop_pubs[2].clone()],
+            hop_public_keys: [
+                hop_pubs[0].clone(),
+                hop_pubs[1].clone(),
+                hop_pubs[2].clone(),
+            ],
             hop_infos: [
                 HopInfo {
                     node_id: [0x01; 32],
@@ -646,11 +639,30 @@ mod tests {
 
         let effective = PAYLOAD_SIZE - NUM_HOPS * AEAD_TAG_SIZE;
         let params = SphinxBuildParams {
-            hop_public_keys: [hop_pubs[0].clone(), hop_pubs[1].clone(), hop_pubs[2].clone()],
+            hop_public_keys: [
+                hop_pubs[0].clone(),
+                hop_pubs[1].clone(),
+                hop_pubs[2].clone(),
+            ],
             hop_infos: [
-                HopInfo { node_id: [0; 32], next_hop_pk: [0; 32], circuit_id: [0; 16], hop_index: 0 },
-                HopInfo { node_id: [0; 32], next_hop_pk: [0; 32], circuit_id: [0; 16], hop_index: 1 },
-                HopInfo { node_id: [0; 32], next_hop_pk: [0; 32], circuit_id: [0; 16], hop_index: 2 },
+                HopInfo {
+                    node_id: [0; 32],
+                    next_hop_pk: [0; 32],
+                    circuit_id: [0; 16],
+                    hop_index: 0,
+                },
+                HopInfo {
+                    node_id: [0; 32],
+                    next_hop_pk: [0; 32],
+                    circuit_id: [0; 16],
+                    hop_index: 1,
+                },
+                HopInfo {
+                    node_id: [0; 32],
+                    next_hop_pk: [0; 32],
+                    circuit_id: [0; 16],
+                    hop_index: 2,
+                },
             ],
             plaintext: vec![0u8; effective + 1],
         };

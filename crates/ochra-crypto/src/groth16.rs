@@ -10,9 +10,7 @@
 //! - Desktop proving (2^16 constraints): ~3-5s
 
 use ark_bls12_381::{Bls12_381, Fr};
-use ark_groth16::{
-    Groth16, PreparedVerifyingKey, Proof, ProvingKey, VerifyingKey,
-};
+use ark_groth16::{Groth16, PreparedVerifyingKey, Proof, ProvingKey, VerifyingKey};
 use ark_relations::r1cs::{ConstraintSynthesizer, ConstraintSystemRef, SynthesisError};
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 use ark_snark::SNARK;
@@ -114,7 +112,10 @@ pub struct MultiplyCircuit {
 }
 
 impl ConstraintSynthesizer<Fr> for MultiplyCircuit {
-    fn generate_constraints(self, cs: ConstraintSystemRef<Fr>) -> std::result::Result<(), SynthesisError> {
+    fn generate_constraints(
+        self,
+        cs: ConstraintSystemRef<Fr>,
+    ) -> std::result::Result<(), SynthesisError> {
         let a_val = self.a.unwrap_or(Fr::from(0u64));
         let b_val = self.b.unwrap_or(Fr::from(0u64));
         let c_val = a_val * b_val;

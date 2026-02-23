@@ -61,10 +61,7 @@ pub struct GuardianDkg {
 /// - [`GuardianError::TooFewGuardians`] if fewer than `threshold` guardians
 /// - [`GuardianError::DkgError`] if threshold is zero
 /// - [`GuardianError::DkgError`] if threshold exceeds the number of guardians
-pub fn initiate_dkg(
-    guardians: Vec<GuardianInfo>,
-    threshold: u32,
-) -> Result<GuardianDkg> {
+pub fn initiate_dkg(guardians: Vec<GuardianInfo>, threshold: u32) -> Result<GuardianDkg> {
     if threshold == 0 {
         return Err(GuardianError::DkgError(
             "threshold must be at least 1".to_string(),
@@ -134,10 +131,7 @@ impl GuardianDkg {
 
         self.status = DkgStatus::SharesDistributed;
 
-        tracing::info!(
-            shares = self.shares.len(),
-            "DKG shares distributed"
-        );
+        tracing::info!(shares = self.shares.len(), "DKG shares distributed");
 
         // In a real implementation, guardians would verify and acknowledge.
         // For v1, we mark as complete immediately.

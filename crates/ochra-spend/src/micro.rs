@@ -10,7 +10,7 @@
 use ochra_crypto::blake3;
 use serde::{Deserialize, Serialize};
 
-use crate::{SpendError, Result};
+use crate::{Result, SpendError};
 
 /// Fee rate for micro transactions (0.1%).
 pub const FEE_RATE: f64 = 0.001;
@@ -75,11 +75,7 @@ pub fn execute_micro(tx: &MicroTransaction) -> Result<Receipt> {
 
     // Compute transaction hash
     let amount_bytes = tx.amount.to_le_bytes();
-    let fields = blake3::encode_multi_field(&[
-        &tx.nullifier[..],
-        &amount_bytes,
-        &tx.blind_token,
-    ]);
+    let fields = blake3::encode_multi_field(&[&tx.nullifier[..], &amount_bytes, &tx.blind_token]);
     let tx_hash = blake3::hash(&fields);
 
     let timestamp = current_timestamp();
@@ -108,7 +104,11 @@ pub fn compute_fee(amount: u64) -> u64 {
     }
     let fee = (amount as f64 * FEE_RATE) as u64;
     // Minimum fee is 1 micro-seed
-    if fee == 0 { 1 } else { fee }
+    if fee == 0 {
+        1
+    } else {
+        fee
+    }
 }
 
 /// Get the current Unix timestamp in seconds.

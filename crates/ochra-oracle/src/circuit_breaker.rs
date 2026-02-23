@@ -163,7 +163,9 @@ mod tests {
     #[test]
     fn test_check_operational_stale() {
         let cb = CircuitBreaker::new(1000);
-        let err = cb.check_operational(1000 + STALENESS_THRESHOLD + 1).unwrap_err();
+        let err = cb
+            .check_operational(1000 + STALENESS_THRESHOLD + 1)
+            .unwrap_err();
         assert!(matches!(err, OracleError::StaleData { .. }));
     }
 
@@ -171,7 +173,9 @@ mod tests {
     fn test_check_operational_paused_takes_priority() {
         let mut cb = CircuitBreaker::new(1000);
         cb.trigger_pause();
-        let err = cb.check_operational(1000 + STALENESS_THRESHOLD + 1).unwrap_err();
+        let err = cb
+            .check_operational(1000 + STALENESS_THRESHOLD + 1)
+            .unwrap_err();
         // Pause check comes before staleness check
         assert!(matches!(err, OracleError::Paused));
     }

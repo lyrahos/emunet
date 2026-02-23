@@ -52,9 +52,8 @@ async fn full_lifecycle_identity_to_economy() {
     // =========================================================
     let salt = argon2id::generate_salt();
     // Use small Argon2id params for test speed (production uses 256MB).
-    let encryption_key =
-        argon2id::derive_key_custom(TEST_PASSWORD, &salt, 1024, 1, 1, 32)
-            .expect("Argon2id key derivation should succeed");
+    let encryption_key = argon2id::derive_key_custom(TEST_PASSWORD, &salt, 1024, 1, 1, 32)
+        .expect("Argon2id key derivation should succeed");
     let mut enc_key_arr = [0u8; 32];
     enc_key_arr.copy_from_slice(&encryption_key);
 
@@ -149,8 +148,7 @@ async fn full_lifecycle_identity_to_economy() {
     );
 
     // Verify Merkle root is deterministic.
-    let split_result_2 =
-        chunker::split_content(content_data).expect("Second split should succeed");
+    let split_result_2 = chunker::split_content(content_data).expect("Second split should succeed");
     assert_eq!(
         split_result.content_hash, split_result_2.content_hash,
         "Merkle root must be deterministic for identical content"
@@ -161,12 +159,7 @@ async fn full_lifecycle_identity_to_economy() {
         let proof = chunker::generate_merkle_proof(&split_result.leaf_hashes, i)
             .expect("Merkle proof generation should succeed");
         assert!(
-            chunker::verify_merkle_proof(
-                &split_result.content_hash,
-                leaf_hash,
-                &proof,
-                i as u32,
-            ),
+            chunker::verify_merkle_proof(&split_result.content_hash, leaf_hash, &proof, i as u32,),
             "Merkle proof for chunk {i} must verify against root"
         );
     }
@@ -217,8 +210,7 @@ async fn full_lifecycle_identity_to_economy() {
     .expect("Content catalog insertion should succeed");
 
     // Verify the content appears in the catalog.
-    let catalog = content::list_by_space(&conn, &group_id)
-        .expect("Catalog listing should succeed");
+    let catalog = content::list_by_space(&conn, &group_id).expect("Catalog listing should succeed");
     assert_eq!(catalog.len(), 1, "Catalog should contain one item");
     assert_eq!(catalog[0].title, "Premium Content");
     assert_eq!(catalog[0].total_size_bytes, content_data.len() as u64);
@@ -255,8 +247,7 @@ async fn full_lifecycle_identity_to_economy() {
         creator_pct: 70,
         network_pct: 20,
     };
-    splits::validate_split(&split_config)
-        .expect("Default split configuration must be valid");
+    splits::validate_split(&split_config).expect("Default split configuration must be valid");
 
     let (host_share, creator_share, network_share) =
         splits::distribute(CONTENT_PRICE_MICRO, &split_config)
@@ -308,8 +299,8 @@ async fn full_lifecycle_identity_to_economy() {
     );
 
     // Verify transaction history.
-    let txs = wallet::recent_transactions(&conn, 10)
-        .expect("Transaction history query should succeed");
+    let txs =
+        wallet::recent_transactions(&conn, 10).expect("Transaction history query should succeed");
     assert_eq!(txs.len(), 1, "There should be exactly one transaction");
     assert_eq!(txs[0].tx_type, "purchase");
     assert_eq!(txs[0].amount, CONTENT_PRICE_MICRO);
@@ -365,8 +356,7 @@ async fn pik_generation_and_node_id_derivation() {
 async fn content_chunking_and_merkle_verification() {
     // Test with multi-chunk content.
     let large_data = vec![0xABu8; chunker::CHUNK_SIZE * 3 + 500];
-    let result = chunker::split_content(&large_data)
-        .expect("Multi-chunk splitting should succeed");
+    let result = chunker::split_content(&large_data).expect("Multi-chunk splitting should succeed");
 
     assert_eq!(result.chunks.len(), 4, "3.x chunks should split into 4");
     assert_eq!(result.chunks[0].data.len(), chunker::CHUNK_SIZE);

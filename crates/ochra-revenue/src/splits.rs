@@ -15,7 +15,7 @@
 
 use serde::{Deserialize, Serialize};
 
-use crate::{RevenueError, Result};
+use crate::{Result, RevenueError};
 
 /// Timelock duration for split changes (30 days in seconds).
 pub const TIMELOCK_SECONDS: u64 = 30 * 24 * 3600;
@@ -129,10 +129,7 @@ pub fn is_effective(proposal: &SplitChangeProposal, current_time: u64) -> bool {
 ///
 /// - [`RevenueError::ZeroAmount`] if the amount is zero
 /// - [`RevenueError::InvalidSplitTotal`] if the split is invalid
-pub fn distribute(
-    amount: u64,
-    split: &RevenueSplitConfig,
-) -> Result<(u64, u64, u64)> {
+pub fn distribute(amount: u64, split: &RevenueSplitConfig) -> Result<(u64, u64, u64)> {
     if amount == 0 {
         return Err(RevenueError::ZeroAmount);
     }

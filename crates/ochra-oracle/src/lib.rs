@@ -48,7 +48,9 @@ pub enum OracleError {
     EmptyWindow,
 
     /// Oracle data is stale beyond the staleness threshold.
-    #[error("oracle data is stale: last update {last_update}, current {current}, threshold {threshold}")]
+    #[error(
+        "oracle data is stale: last update {last_update}, current {current}, threshold {threshold}"
+    )]
     StaleData {
         /// Timestamp of the last update.
         last_update: u64,

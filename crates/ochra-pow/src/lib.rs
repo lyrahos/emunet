@@ -21,7 +21,9 @@ pub enum PowError {
     Argon2(String),
 
     /// The proof did not meet the required difficulty target.
-    #[error("proof does not meet difficulty target (need {required} leading zero bits, got {actual})")]
+    #[error(
+        "proof does not meet difficulty target (need {required} leading zero bits, got {actual})"
+    )]
     InsufficientDifficulty {
         /// Required number of leading zero bits.
         required: u32,

@@ -122,11 +122,7 @@ async fn recovery_full_lifecycle_3_of_5() {
         let hb = heartbeat::publish_heartbeat(guardian.pik_hash, BASE_TIME);
         assert_eq!(hb.guardian_id, guardian.pik_hash);
 
-        let status = heartbeat::check_heartbeat(
-            &guardian.pik_hash,
-            hb.timestamp,
-            BASE_TIME + 1000,
-        );
+        let status = heartbeat::check_heartbeat(&guardian.pik_hash, hb.timestamp, BASE_TIME + 1000);
         assert_eq!(
             status,
             heartbeat::HealthStatus::Healthy,
@@ -136,10 +132,7 @@ async fn recovery_full_lifecycle_3_of_5() {
         // Verify dead drop address is deterministic.
         let addr1 = heartbeat::derive_dead_drop_addr(&guardian.pik_hash, 1);
         let addr2 = heartbeat::derive_dead_drop_addr(&guardian.pik_hash, 1);
-        assert_eq!(
-            addr1, addr2,
-            "Dead drop address must be deterministic"
-        );
+        assert_eq!(addr1, addr2, "Dead drop address must be deterministic");
 
         // Different epochs produce different addresses.
         let addr3 = heartbeat::derive_dead_drop_addr(&guardian.pik_hash, 2);
@@ -320,10 +313,7 @@ async fn recovery_veto_cancels_process() {
 
     // Double veto must fail.
     let double_veto_result = recovery::submit_veto(&mut request);
-    assert!(
-        double_veto_result.is_err(),
-        "Double veto must be rejected"
-    );
+    assert!(double_veto_result.is_err(), "Double veto must be rejected");
 
     // Shares cannot be submitted even after veto window expires.
     let share = GuardianShare {
@@ -366,10 +356,7 @@ async fn guardian_heartbeat_health_transitions() {
         heartbeat_time,
         heartbeat_time + heartbeat::MAX_HEARTBEAT_AGE + 1,
     );
-    assert_eq!(
-        status_unresponsive,
-        heartbeat::HealthStatus::Unresponsive
-    );
+    assert_eq!(status_unresponsive, heartbeat::HealthStatus::Unresponsive);
 }
 
 #[tokio::test]
@@ -377,16 +364,15 @@ async fn guardian_heartbeat_health_transitions() {
 async fn dkg_edge_cases() {
     // Test: threshold equals guardian count (n-of-n).
     let guardians = make_test_guardians(3);
-    let mut dkg_n_of_n = dkg::initiate_dkg(guardians.clone(), 3)
-        .expect("3-of-3 DKG should succeed");
+    let mut dkg_n_of_n =
+        dkg::initiate_dkg(guardians.clone(), 3).expect("3-of-3 DKG should succeed");
     dkg_n_of_n
         .process_shares()
         .expect("Processing should succeed");
     assert!(dkg_n_of_n.is_complete());
 
     // Test: threshold = 1 (any single guardian can recover).
-    let mut dkg_1_of_3 = dkg::initiate_dkg(guardians, 1)
-        .expect("1-of-3 DKG should succeed");
+    let mut dkg_1_of_3 = dkg::initiate_dkg(guardians, 1).expect("1-of-3 DKG should succeed");
     dkg_1_of_3
         .process_shares()
         .expect("Processing should succeed");
@@ -407,9 +393,10 @@ async fn dkg_edge_cases() {
 
     // Test: cannot process shares twice.
     let guardians4 = make_test_guardians(4);
-    let mut dkg_double = dkg::initiate_dkg(guardians4, 2)
-        .expect("DKG should initiate");
-    dkg_double.process_shares().expect("First process should succeed");
+    let mut dkg_double = dkg::initiate_dkg(guardians4, 2).expect("DKG should initiate");
+    dkg_double
+        .process_shares()
+        .expect("First process should succeed");
     let second_process = dkg_double.process_shares();
     assert!(
         second_process.is_err(),
@@ -444,10 +431,7 @@ async fn recovery_database_persistence() {
             row.get(0)
         })
         .expect("Count query should succeed");
-    assert_eq!(
-        count, 3,
-        "Should have 3 recovery contacts in the database"
-    );
+    assert_eq!(count, 3, "Should have 3 recovery contacts in the database");
 
     // Verify we can retrieve by PIK hash.
     let found: bool = conn

@@ -12,7 +12,7 @@
 
 use serde::{Deserialize, Serialize};
 
-use crate::{VysError, Result};
+use crate::{Result, VysError};
 
 /// VYS reward accumulator for a single node.
 #[derive(Clone, Debug, Serialize, Deserialize)]

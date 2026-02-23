@@ -198,18 +198,13 @@ pub fn can_hole_punch(nat_type: &NatType) -> bool {
 ///
 /// Tries hole-punching first, falls back to relay if the NAT type
 /// prevents direct connectivity.
-pub fn attempt_traversal(
-    _peer_address: &str,
-    nat_type: &NatType,
-) -> Result<TraversalResult> {
+pub fn attempt_traversal(_peer_address: &str, nat_type: &NatType) -> Result<TraversalResult> {
     match nat_type {
         NatType::None => Ok(TraversalResult::Direct),
         NatType::FullCone | NatType::AddressRestrictedCone | NatType::PortRestrictedCone => {
             Ok(TraversalResult::HolePunched)
         }
-        NatType::Symmetric | NatType::Unknown => {
-            Ok(TraversalResult::Relayed)
-        }
+        NatType::Symmetric | NatType::Unknown => Ok(TraversalResult::Relayed),
     }
 }
 

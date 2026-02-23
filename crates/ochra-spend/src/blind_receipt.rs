@@ -7,7 +7,7 @@
 use ochra_crypto::blake3;
 use serde::{Deserialize, Serialize};
 
-use crate::{SpendError, Result};
+use crate::{Result, SpendError};
 
 /// A blind receipt for a content purchase.
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -57,10 +57,7 @@ pub fn generate_receipt(content_hash: &[u8; 32], amount: u64) -> Result<BlindRec
 
     // Derive receipt ID from the blinded content hash and amount
     let amount_bytes = amount.to_le_bytes();
-    let fields = blake3::encode_multi_field(&[
-        &blinded_content_hash[..],
-        &amount_bytes,
-    ]);
+    let fields = blake3::encode_multi_field(&[&blinded_content_hash[..], &amount_bytes]);
     let receipt_id = blake3::hash(&fields);
 
     let timestamp = std::time::SystemTime::now()

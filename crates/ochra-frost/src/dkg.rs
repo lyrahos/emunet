@@ -104,10 +104,7 @@ pub struct DkgCeremony {
 /// # Returns
 ///
 /// A new [`DkgCeremony`] in Round 1.
-pub fn start_ceremony(
-    participants: Vec<[u8; 32]>,
-    threshold: u16,
-) -> Result<DkgCeremony> {
+pub fn start_ceremony(participants: Vec<[u8; 32]>, threshold: u16) -> Result<DkgCeremony> {
     if participants.is_empty() {
         return Err(FrostCoordError::Quorum(
             "no participants provided".to_string(),
@@ -176,15 +173,18 @@ impl DkgCeremony {
         }
 
         if !self.participants.contains(&commitment.participant_id) {
-            return Err(FrostCoordError::UnknownSigner(
-                hex::encode(commitment.participant_id),
-            ));
+            return Err(FrostCoordError::UnknownSigner(hex::encode(
+                commitment.participant_id,
+            )));
         }
 
-        if self.round1_commitments.contains_key(&commitment.participant_id) {
-            return Err(FrostCoordError::DuplicateContribution(
-                hex::encode(commitment.participant_id),
-            ));
+        if self
+            .round1_commitments
+            .contains_key(&commitment.participant_id)
+        {
+            return Err(FrostCoordError::DuplicateContribution(hex::encode(
+                commitment.participant_id,
+            )));
         }
 
         let pid = commitment.participant_id;
@@ -193,7 +193,11 @@ impl DkgCeremony {
         tracing::debug!(
             ceremony_id = hex::encode(self.ceremony_id),
             participant = hex::encode(pid),
-            progress = format!("{}/{}", self.round1_commitments.len(), self.participants.len()),
+            progress = format!(
+                "{}/{}",
+                self.round1_commitments.len(),
+                self.participants.len()
+            ),
             "received Round 1 commitment"
         );
 
@@ -222,15 +226,15 @@ impl DkgCeremony {
         }
 
         if !self.participants.contains(&share_package.sender_id) {
-            return Err(FrostCoordError::UnknownSigner(
-                hex::encode(share_package.sender_id),
-            ));
+            return Err(FrostCoordError::UnknownSigner(hex::encode(
+                share_package.sender_id,
+            )));
         }
 
         if !self.participants.contains(&share_package.recipient_id) {
-            return Err(FrostCoordError::UnknownSigner(
-                hex::encode(share_package.recipient_id),
-            ));
+            return Err(FrostCoordError::UnknownSigner(hex::encode(
+                share_package.recipient_id,
+            )));
         }
 
         let sender = share_package.sender_id;
@@ -278,15 +282,18 @@ impl DkgCeremony {
         }
 
         if !self.participants.contains(&verification.participant_id) {
-            return Err(FrostCoordError::UnknownSigner(
-                hex::encode(verification.participant_id),
-            ));
+            return Err(FrostCoordError::UnknownSigner(hex::encode(
+                verification.participant_id,
+            )));
         }
 
-        if self.round3_verifications.contains_key(&verification.participant_id) {
-            return Err(FrostCoordError::DuplicateContribution(
-                hex::encode(verification.participant_id),
-            ));
+        if self
+            .round3_verifications
+            .contains_key(&verification.participant_id)
+        {
+            return Err(FrostCoordError::DuplicateContribution(hex::encode(
+                verification.participant_id,
+            )));
         }
 
         if !verification.verified {
@@ -303,7 +310,11 @@ impl DkgCeremony {
         tracing::debug!(
             ceremony_id = hex::encode(self.ceremony_id),
             participant = hex::encode(pid),
-            progress = format!("{}/{}", self.round3_verifications.len(), self.participants.len()),
+            progress = format!(
+                "{}/{}",
+                self.round3_verifications.len(),
+                self.participants.len()
+            ),
             "received Round 3 verification"
         );
 
@@ -324,10 +335,7 @@ impl DkgCeremony {
     /// Only valid after the ceremony is complete.
     pub fn all_verified(&self) -> bool {
         self.round == CeremonyRound::Complete
-            && self
-                .round3_verifications
-                .values()
-                .all(|v| v.verified)
+            && self.round3_verifications.values().all(|v| v.verified)
     }
 
     /// Get the Round 1 commitments (available after Round 1 completes).

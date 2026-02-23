@@ -203,8 +203,7 @@ pub fn derive_hop_keys(shared_secret: &[u8; 32]) -> HopKeys {
     let hop_key = ochra_crypto::blake3::derive_key(contexts::SPHINX_HOP_KEY, shared_secret);
     let hop_mac = ochra_crypto::blake3::derive_key(contexts::SPHINX_HOP_MAC, shared_secret);
     let hop_pad = ochra_crypto::blake3::derive_key(contexts::SPHINX_HOP_PAD, shared_secret);
-    let nonce_full =
-        ochra_crypto::blake3::derive_key(contexts::SPHINX_HOP_NONCE, shared_secret);
+    let nonce_full = ochra_crypto::blake3::derive_key(contexts::SPHINX_HOP_NONCE, shared_secret);
 
     let mut hop_nonce = [0u8; 12];
     hop_nonce.copy_from_slice(&nonce_full[..12]);
@@ -318,10 +317,7 @@ mod tests {
     fn test_circuit_builder_insufficient_relays() {
         let r1 = make_relay_descriptor(1);
 
-        let result = CircuitBuilder::new()
-            .add_relay(r1)
-            .expect("add r1")
-            .build();
+        let result = CircuitBuilder::new().add_relay(r1).expect("add r1").build();
 
         assert!(result.is_err());
         assert!(matches!(

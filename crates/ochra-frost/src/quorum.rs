@@ -28,11 +28,7 @@ impl QuorumConfig {
     /// * `threshold` - Minimum signers required.
     /// * `members` - Initial quorum member node IDs.
     /// * `max_churn_per_epoch` - Maximum membership changes per epoch.
-    pub fn new(
-        threshold: u16,
-        members: Vec<[u8; 32]>,
-        max_churn_per_epoch: usize,
-    ) -> Result<Self> {
+    pub fn new(threshold: u16, members: Vec<[u8; 32]>, max_churn_per_epoch: usize) -> Result<Self> {
         if threshold == 0 || threshold as usize > members.len() {
             return Err(FrostCoordError::Quorum(format!(
                 "invalid threshold {threshold} for {} members",
@@ -105,7 +101,11 @@ pub fn select_quorum(
             .then_with(|| a.node_id.cmp(&b.node_id))
     });
 
-    let selected: Vec<[u8; 32]> = sorted.iter().take(required_size).map(|n| n.node_id).collect();
+    let selected: Vec<[u8; 32]> = sorted
+        .iter()
+        .take(required_size)
+        .map(|n| n.node_id)
+        .collect();
 
     tracing::debug!(
         selected = selected.len(),
@@ -132,8 +132,7 @@ pub fn select_quorum(
 pub fn can_rotate(current: &QuorumConfig, proposed: &[[u8; 32]]) -> bool {
     let current_set: std::collections::HashSet<[u8; 32]> =
         current.members.iter().copied().collect();
-    let proposed_set: std::collections::HashSet<[u8; 32]> =
-        proposed.iter().copied().collect();
+    let proposed_set: std::collections::HashSet<[u8; 32]> = proposed.iter().copied().collect();
 
     let added = proposed_set.difference(&current_set).count();
     let removed = current_set.difference(&proposed_set).count();
@@ -150,8 +149,7 @@ pub fn can_rotate(current: &QuorumConfig, proposed: &[[u8; 32]]) -> bool {
 pub fn compute_churn(current: &QuorumConfig, proposed: &[[u8; 32]]) -> (usize, usize) {
     let current_set: std::collections::HashSet<[u8; 32]> =
         current.members.iter().copied().collect();
-    let proposed_set: std::collections::HashSet<[u8; 32]> =
-        proposed.iter().copied().collect();
+    let proposed_set: std::collections::HashSet<[u8; 32]> = proposed.iter().copied().collect();
 
     let added = proposed_set.difference(&current_set).count();
     let removed = current_set.difference(&proposed_set).count();

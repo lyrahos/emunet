@@ -69,7 +69,10 @@ mod tests {
     fn test_baseline_denomination() {
         // At baseline: twap = 1 Seed in micro-seeds, infra_metric = 1
         let denom = compute_denomination(MICRO_SEEDS_PER_SEED, 1).expect("baseline denom");
-        assert_eq!(denom, MICRO_SEEDS_PER_SEED as u64 * MICRO_SEEDS_PER_SEED as u64);
+        assert_eq!(
+            denom,
+            MICRO_SEEDS_PER_SEED as u64 * MICRO_SEEDS_PER_SEED as u64
+        );
     }
 
     #[test]

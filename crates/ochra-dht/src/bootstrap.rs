@@ -218,7 +218,9 @@ pub trait BootstrapTransport {
         &self,
         addr: SocketAddr,
         timeout: Duration,
-    ) -> impl std::future::Future<Output = std::result::Result<NodeInfo, Box<dyn std::error::Error + Send + Sync>>> + Send;
+    ) -> impl std::future::Future<
+        Output = std::result::Result<NodeInfo, Box<dyn std::error::Error + Send + Sync>>,
+    > + Send;
 
     /// Perform a `FIND_NODE` query against the given nodes.
     ///
@@ -228,7 +230,9 @@ pub trait BootstrapTransport {
         target: NodeId,
         initial_nodes: Vec<NodeInfo>,
         timeout: Duration,
-    ) -> impl std::future::Future<Output = std::result::Result<Vec<NodeInfo>, Box<dyn std::error::Error + Send + Sync>>> + Send;
+    ) -> impl std::future::Future<
+        Output = std::result::Result<Vec<NodeInfo>, Box<dyn std::error::Error + Send + Sync>>,
+    > + Send;
 }
 
 /// Serde support for SocketAddr as a string.

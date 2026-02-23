@@ -47,9 +47,7 @@ pub struct RelayCache {
 impl RelayCache {
     /// Create a new empty relay cache.
     pub fn new() -> Self {
-        Self {
-            relays: Vec::new(),
-        }
+        Self { relays: Vec::new() }
     }
 
     /// Create a relay cache from a list of descriptors.
@@ -119,10 +117,7 @@ impl RelaySelector {
     ///
     /// Uses PoSrv-weighted random sampling with constraint enforcement.
     /// Returns an ordered list: `[entry, middle, exit]`.
-    pub fn select_relays(
-        &self,
-        cache: &RelayCache,
-    ) -> Result<Vec<RelayDescriptor>> {
+    pub fn select_relays(&self, cache: &RelayCache) -> Result<Vec<RelayDescriptor>> {
         let available = cache.all();
 
         if available.len() < CIRCUIT_HOPS {
@@ -219,9 +214,7 @@ impl RelaySelector {
             }
         }
 
-        debug!(
-            "Selected {} relays for circuit", selected.len()
-        );
+        debug!("Selected {} relays for circuit", selected.len());
 
         Ok(selected)
     }
@@ -260,14 +253,9 @@ fn extract_subnet_24(addr_str: &str) -> Option<[u8; 3]> {
 /// Select a relay using PoSrv-weighted random sampling.
 ///
 /// Relays with higher PoSrv scores are more likely to be selected.
-fn weighted_select<'a>(
-    relays: &[&'a &RelayDescriptor],
-) -> Result<&'a RelayDescriptor> {
+fn weighted_select<'a>(relays: &[&'a &RelayDescriptor]) -> Result<&'a RelayDescriptor> {
     if relays.is_empty() {
-        return Err(OnionError::InsufficientRelays {
-            need: 1,
-            have: 0,
-        });
+        return Err(OnionError::InsufficientRelays { need: 1, have: 0 });
     }
 
     // Compute total weight (PoSrv scores, clamped to positive).
@@ -319,14 +307,8 @@ mod tests {
 
     #[test]
     fn test_extract_subnet_24() {
-        assert_eq!(
-            extract_subnet_24("192.168.1.100:4433"),
-            Some([192, 168, 1])
-        );
-        assert_eq!(
-            extract_subnet_24("10.0.0.1:4433"),
-            Some([10, 0, 0])
-        );
+        assert_eq!(extract_subnet_24("192.168.1.100:4433"), Some([192, 168, 1]));
+        assert_eq!(extract_subnet_24("10.0.0.1:4433"), Some([10, 0, 0]));
         assert_eq!(extract_subnet_24("invalid"), None);
     }
 
@@ -403,10 +385,7 @@ mod tests {
         for relay in &selected {
             let subnet = extract_subnet_24(&relay.ip_addr);
             if let Some(s) = subnet {
-                assert!(
-                    subnets.insert(s),
-                    "Duplicate /24 subnet in selected relays"
-                );
+                assert!(subnets.insert(s), "Duplicate /24 subnet in selected relays");
             }
         }
     }

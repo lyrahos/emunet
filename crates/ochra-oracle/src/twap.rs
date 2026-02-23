@@ -116,7 +116,10 @@ mod tests {
         let err = compute_twap(&prices).unwrap_err();
         assert!(matches!(
             err,
-            OracleError::InsufficientObservations { required: 3, available: 2 }
+            OracleError::InsufficientObservations {
+                required: 3,
+                available: 2
+            }
         ));
     }
 
@@ -126,7 +129,10 @@ mod tests {
         let err = compute_twap(&prices).unwrap_err();
         assert!(matches!(
             err,
-            OracleError::NonMonotonicTimestamp { new: 2000, last: 3000 }
+            OracleError::NonMonotonicTimestamp {
+                new: 2000,
+                last: 3000
+            }
         ));
     }
 
@@ -135,18 +141,17 @@ mod tests {
         let err = compute_twap(&[]).unwrap_err();
         assert!(matches!(
             err,
-            OracleError::InsufficientObservations { required: 3, available: 0 }
+            OracleError::InsufficientObservations {
+                required: 3,
+                available: 0
+            }
         ));
     }
 
     #[test]
     fn test_large_values() {
         // Ensure no overflow for large u64 prices
-        let prices = vec![
-            (0, u64::MAX / 2),
-            (1, u64::MAX / 2),
-            (2, u64::MAX / 2),
-        ];
+        let prices = vec![(0, u64::MAX / 2), (1, u64::MAX / 2), (2, u64::MAX / 2)];
         let twap = compute_twap(&prices).expect("large values TWAP");
         assert_eq!(twap, u64::MAX / 2);
     }

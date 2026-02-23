@@ -31,7 +31,12 @@ pub const TAG_SIZE: usize = 16;
 /// # Returns
 ///
 /// Ciphertext with appended 16-byte authentication tag.
-pub fn encrypt(key: &[u8; KEY_SIZE], nonce: &[u8; NONCE_SIZE], plaintext: &[u8], aad: &[u8]) -> Result<Vec<u8>> {
+pub fn encrypt(
+    key: &[u8; KEY_SIZE],
+    nonce: &[u8; NONCE_SIZE],
+    plaintext: &[u8],
+    aad: &[u8],
+) -> Result<Vec<u8>> {
     let cipher = ChaCha20Poly1305::new(Key::from_slice(key));
     let nonce = Nonce::from_slice(nonce);
 
@@ -58,7 +63,12 @@ pub fn encrypt(key: &[u8; KEY_SIZE], nonce: &[u8; NONCE_SIZE], plaintext: &[u8],
 /// # Returns
 ///
 /// Decrypted plaintext, or error if authentication fails.
-pub fn decrypt(key: &[u8; KEY_SIZE], nonce: &[u8; NONCE_SIZE], ciphertext: &[u8], aad: &[u8]) -> Result<Vec<u8>> {
+pub fn decrypt(
+    key: &[u8; KEY_SIZE],
+    nonce: &[u8; NONCE_SIZE],
+    ciphertext: &[u8],
+    aad: &[u8],
+) -> Result<Vec<u8>> {
     let cipher = ChaCha20Poly1305::new(Key::from_slice(key));
     let nonce = Nonce::from_slice(nonce);
 
@@ -74,12 +84,20 @@ pub fn decrypt(key: &[u8; KEY_SIZE], nonce: &[u8; NONCE_SIZE], ciphertext: &[u8]
 }
 
 /// Encrypt data without additional authenticated data.
-pub fn encrypt_no_aad(key: &[u8; KEY_SIZE], nonce: &[u8; NONCE_SIZE], plaintext: &[u8]) -> Result<Vec<u8>> {
+pub fn encrypt_no_aad(
+    key: &[u8; KEY_SIZE],
+    nonce: &[u8; NONCE_SIZE],
+    plaintext: &[u8],
+) -> Result<Vec<u8>> {
     encrypt(key, nonce, plaintext, &[])
 }
 
 /// Decrypt data without additional authenticated data.
-pub fn decrypt_no_aad(key: &[u8; KEY_SIZE], nonce: &[u8; NONCE_SIZE], ciphertext: &[u8]) -> Result<Vec<u8>> {
+pub fn decrypt_no_aad(
+    key: &[u8; KEY_SIZE],
+    nonce: &[u8; NONCE_SIZE],
+    ciphertext: &[u8],
+) -> Result<Vec<u8>> {
     decrypt(key, nonce, ciphertext, &[])
 }
 

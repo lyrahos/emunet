@@ -7,7 +7,7 @@
 use ochra_crypto::blake3;
 use serde::{Deserialize, Serialize};
 
-use crate::{SpendError, Result};
+use crate::{Result, SpendError};
 
 /// Escrow timeout in seconds.
 pub const ESCROW_TIMEOUT: u64 = 60;
@@ -129,17 +129,11 @@ pub fn finalize_macro(escrow: &mut EscrowHandle) -> Result<MacroReceipt> {
 
     // Compute transaction hash
     let amount_bytes = escrow.amount.to_le_bytes();
-    let fields = blake3::encode_multi_field(&[
-        &escrow.escrow_id[..],
-        &escrow.nullifier[..],
-        &amount_bytes,
-    ]);
+    let fields =
+        blake3::encode_multi_field(&[&escrow.escrow_id[..], &escrow.nullifier[..], &amount_bytes]);
     let tx_hash = blake3::hash(&fields);
 
-    tracing::info!(
-        amount = escrow.amount,
-        "macro transaction: finalized"
-    );
+    tracing::info!(amount = escrow.amount, "macro transaction: finalized");
 
     Ok(MacroReceipt {
         tx_hash,

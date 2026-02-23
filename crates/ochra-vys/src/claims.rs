@@ -6,7 +6,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::accounting::VysAccumulator;
-use crate::{VysError, Result};
+use crate::{Result, VysError};
 
 /// A request to claim accumulated VYS rewards.
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -39,10 +39,7 @@ pub struct ClaimResult {
 ///
 /// - [`VysError::NoRewards`] if the accumulator has no claimable rewards
 /// - [`VysError::InvalidProof`] if the claim fails verification
-pub fn process_claim(
-    request: &ClaimRequest,
-    accumulator: &mut VysAccumulator,
-) -> Result<u64> {
+pub fn process_claim(request: &ClaimRequest, accumulator: &mut VysAccumulator) -> Result<u64> {
     if !verify_claim(request) {
         return Err(VysError::InvalidProof(
             "claim verification failed".to_string(),
@@ -66,17 +63,11 @@ pub fn process_claim(
         accumulator.reset_rewards(request.epoch);
     } else {
         // Partial claim: reduce accumulated rewards
-        accumulator.accumulated_rewards = accumulator
-            .accumulated_rewards
-            .saturating_sub(disbursed);
+        accumulator.accumulated_rewards = accumulator.accumulated_rewards.saturating_sub(disbursed);
         accumulator.last_claim_epoch = request.epoch;
     }
 
-    tracing::info!(
-        disbursed,
-        epoch = request.epoch,
-        "VYS claim processed"
-    );
+    tracing::info!(disbursed, epoch = request.epoch, "VYS claim processed");
 
     Ok(disbursed)
 }

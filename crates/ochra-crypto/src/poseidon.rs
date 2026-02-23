@@ -204,7 +204,8 @@ pub fn bytes_to_field(bytes: &[u8; 32]) -> Result<Fr> {
         repr[i] = u64::from_le_bytes(b);
     }
     let big = BigInteger256::new(repr);
-    Fr::from_bigint(big).ok_or_else(|| CryptoError::InvalidInput("value exceeds field modulus".into()))
+    Fr::from_bigint(big)
+        .ok_or_else(|| CryptoError::InvalidInput("value exceeds field modulus".into()))
 }
 
 /// Convert a field element to bytes.
@@ -284,10 +285,7 @@ mod tests {
         assert_eq!(params.width, 3);
         assert_eq!(params.full_rounds, 8);
         assert_eq!(params.partial_rounds, 57);
-        assert_eq!(
-            params.round_constants.len(),
-            (8 + 57) * 3
-        );
+        assert_eq!(params.round_constants.len(), (8 + 57) * 3);
         assert_eq!(params.mds_matrix.len(), 3);
         assert_eq!(params.mds_matrix[0].len(), 3);
     }
