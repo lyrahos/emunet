@@ -3,12 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Eye, EyeOff } from "lucide-react";
 import Button from "@/components/ui/Button";
-import { useIpc } from "@/hooks/useIpc";
+import { rpcCall, RpcError } from "@/lib/rpc-client";
 import { useAppStore } from "@/lib/store";
 
 export default function Welcome() {
   const navigate = useNavigate();
-  const { call, loading } = useIpc();
   const setAuth = useAppStore((s) => s.setAuth);
 
   const [name, setName] = useState("");
@@ -16,6 +15,7 @@ export default function Welcome() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const canProceed =
     name.trim().length >= 2 &&
@@ -25,21 +25,29 @@ export default function Welcome() {
   const handleCreate = async () => {
     if (!canProceed) return;
     setError("");
+    setLoading(true);
 
-    const result = await call("init_pik", { password });
+    try {
+      const result = await rpcCall<{ pik_hash: string }>("init_pik", { password });
 
-    if (result) {
       // Session is now unlocked — save display name
-      await call("update_display_name", { new_name: name.trim() });
+      await rpcCall("update_display_name", { new_name: name.trim() });
 
       setAuth({
         unlocked: true,
         displayName: name.trim(),
-        pikHash: (result as { pik_hash: string }).pik_hash,
+        pikHash: result.pik_hash,
       });
       navigate("/setup/seeds");
-    } else {
-      setError("Failed to create identity. Please try again.");
+    } catch (err) {
+      const msg = err instanceof RpcError ? err.message : String(err);
+      if (msg.includes("connect") || msg.includes("IPC bridge")) {
+        setError("Cannot reach the Ochra daemon. Is it running?");
+      } else {
+        setError(`Failed to create identity: ${msg}`);
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
