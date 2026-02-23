@@ -3,9 +3,7 @@
 //! All periodic operations execute at epoch boundaries (00:00 UTC).
 //! This module manages the epoch scheduler.
 
-use std::sync::Arc;
-
-use tracing::{info, warn};
+use tracing::info;
 
 /// Epoch duration in seconds (24 hours).
 pub const EPOCH_DURATION_SECS: u64 = 24 * 60 * 60;
@@ -32,6 +30,7 @@ pub fn current_relay_epoch() -> u64 {
 }
 
 /// Get seconds until the next epoch boundary.
+#[allow(dead_code)]
 pub fn seconds_until_next_epoch() -> u64 {
     let now = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
@@ -41,6 +40,7 @@ pub fn seconds_until_next_epoch() -> u64 {
 }
 
 /// Get seconds until the next relay epoch boundary.
+#[allow(dead_code)]
 pub fn seconds_until_next_relay_epoch() -> u64 {
     let now = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
@@ -67,6 +67,7 @@ pub fn seconds_until_next_relay_epoch() -> u64 {
 /// 13. Timelock expiry check
 /// 14. Metrics aggregation
 /// 15. Database WAL checkpoint
+#[allow(dead_code)]
 pub async fn run_epoch_boundary() {
     let epoch = current_epoch();
     info!(epoch, "Running epoch boundary operations");

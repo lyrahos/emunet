@@ -2,9 +2,10 @@
 
 use rusqlite::Connection;
 
-use crate::{DbError, Result};
+use crate::Result;
 
 /// Insert a content item.
+#[allow(clippy::too_many_arguments)]
 pub fn insert(
     conn: &Connection,
     content_hash: &[u8; 32],

@@ -5,7 +5,7 @@ use std::path::PathBuf;
 use serde::{Deserialize, Serialize};
 
 /// Complete daemon configuration (Section 33).
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct DaemonConfig {
     /// Network settings.
     #[serde(default)]
@@ -128,18 +128,6 @@ fn default_session_timeout() -> u32 {
 
 fn default_log_level() -> String {
     "info".to_string()
-}
-
-impl Default for DaemonConfig {
-    fn default() -> Self {
-        Self {
-            network: NetworkConfig::default(),
-            storage: StorageConfig::default(),
-            identity: IdentityConfig::default(),
-            privacy: PrivacyConfig::default(),
-            advanced: AdvancedConfig::default(),
-        }
-    }
 }
 
 impl Default for NetworkConfig {

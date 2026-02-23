@@ -68,12 +68,12 @@ fn generate_mds_matrix() -> Vec<Vec<Fr>> {
     let mut matrix = vec![vec![Fr::from(0u64); t]; t];
 
     // Cauchy matrix: M[i][j] = 1 / (x_i + y_j) where x_i = i, y_j = t + j
-    for i in 0..t {
-        for j in 0..t {
+    for (i, row) in matrix.iter_mut().enumerate().take(t) {
+        for (j, cell) in row.iter_mut().enumerate().take(t) {
             let x = Fr::from((i + 1) as u64);
             let y = Fr::from((t + j + 1) as u64);
             let sum = x + y;
-            matrix[i][j] = sum.inverse().unwrap_or(Fr::from(0u64));
+            *cell = sum.inverse().unwrap_or(Fr::from(0u64));
         }
     }
 
@@ -126,14 +126,14 @@ fn poseidon_permutation(params: &PoseidonParams, a: Fr, b: Fr) -> Fr {
     // First half of full rounds
     for _ in 0..half_f {
         // Add round constants
-        for j in 0..t {
-            state[j] += params.round_constants[rc_idx + j];
+        for (j, s) in state.iter_mut().enumerate().take(t) {
+            *s += params.round_constants[rc_idx + j];
         }
         rc_idx += t;
 
         // Full S-box layer
-        for j in 0..t {
-            state[j] = sbox(state[j]);
+        for s in state.iter_mut().take(t) {
+            *s = sbox(*s);
         }
 
         // MDS matrix multiplication
@@ -143,8 +143,8 @@ fn poseidon_permutation(params: &PoseidonParams, a: Fr, b: Fr) -> Fr {
     // Partial rounds
     for _ in 0..r_p {
         // Add round constants
-        for j in 0..t {
-            state[j] += params.round_constants[rc_idx + j];
+        for (j, s) in state.iter_mut().enumerate().take(t) {
+            *s += params.round_constants[rc_idx + j];
         }
         rc_idx += t;
 
@@ -158,14 +158,14 @@ fn poseidon_permutation(params: &PoseidonParams, a: Fr, b: Fr) -> Fr {
     // Second half of full rounds
     for _ in 0..half_f {
         // Add round constants
-        for j in 0..t {
-            state[j] += params.round_constants[rc_idx + j];
+        for (j, s) in state.iter_mut().enumerate().take(t) {
+            *s += params.round_constants[rc_idx + j];
         }
         rc_idx += t;
 
         // Full S-box layer
-        for j in 0..t {
-            state[j] = sbox(state[j]);
+        for s in state.iter_mut().take(t) {
+            *s = sbox(*s);
         }
 
         // MDS matrix multiplication
