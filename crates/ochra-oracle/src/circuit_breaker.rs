@@ -165,7 +165,7 @@ mod tests {
         let cb = CircuitBreaker::new(1000);
         let err = cb
             .check_operational(1000 + STALENESS_THRESHOLD + 1)
-            .unwrap_err();
+            .expect_err("should be stale");
         assert!(matches!(err, OracleError::StaleData { .. }));
     }
 
@@ -175,7 +175,7 @@ mod tests {
         cb.trigger_pause();
         let err = cb
             .check_operational(1000 + STALENESS_THRESHOLD + 1)
-            .unwrap_err();
+            .expect_err("should be paused");
         // Pause check comes before staleness check
         assert!(matches!(err, OracleError::Paused));
     }

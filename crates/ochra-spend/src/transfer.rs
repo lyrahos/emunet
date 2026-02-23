@@ -166,10 +166,10 @@ mod tests {
         let wrong_key = [0x99; 32];
         let result = decrypt_transfer_note(&note, &wrong_key);
         // May produce garbage amount or invalid UTF-8
-        match result {
-            Ok((amount, _)) => assert_ne!(amount, 1000),
-            Err(_) => {} // invalid UTF-8 is expected
+        if let Ok((amount, _)) = result {
+            assert_ne!(amount, 1000);
         }
+        // Err case: invalid UTF-8 is expected
     }
 
     #[test]

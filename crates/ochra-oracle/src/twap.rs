@@ -113,7 +113,7 @@ mod tests {
     #[test]
     fn test_insufficient_observations() {
         let prices = vec![(1000, 100), (2000, 200)];
-        let err = compute_twap(&prices).unwrap_err();
+        let err = compute_twap(&prices).expect_err("insufficient observations");
         assert!(matches!(
             err,
             OracleError::InsufficientObservations {
@@ -126,7 +126,7 @@ mod tests {
     #[test]
     fn test_non_monotonic_rejected() {
         let prices = vec![(3000, 100), (2000, 200), (4000, 300)];
-        let err = compute_twap(&prices).unwrap_err();
+        let err = compute_twap(&prices).expect_err("non-monotonic rejected");
         assert!(matches!(
             err,
             OracleError::NonMonotonicTimestamp {
@@ -138,7 +138,7 @@ mod tests {
 
     #[test]
     fn test_empty_slice() {
-        let err = compute_twap(&[]).unwrap_err();
+        let err = compute_twap(&[]).expect_err("empty slice rejected");
         assert!(matches!(
             err,
             OracleError::InsufficientObservations {

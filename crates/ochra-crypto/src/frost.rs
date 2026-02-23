@@ -155,14 +155,11 @@ mod tests {
         // Verify all key packages have the same group public key
         let group_pk = pubkey_package.inner.verifying_key();
         for kp in &key_packages {
-            assert_eq!(
-                pubkey_package
-                    .inner
-                    .verifying_shares()
-                    .get(kp.inner.identifier())
-                    .is_some(),
-                true
-            );
+            assert!(pubkey_package
+                .inner
+                .verifying_shares()
+                .get(kp.inner.identifier())
+                .is_some());
         }
 
         // Should be a valid Ed25519 public key

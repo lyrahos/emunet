@@ -282,9 +282,9 @@ mod tests {
 
     #[test]
     fn test_needs_chunking() {
-        assert!(!needs_chunking(&vec![0u8; 100]));
-        assert!(!needs_chunking(&vec![0u8; CHUNK_DATA_SIZE]));
-        assert!(needs_chunking(&vec![0u8; CHUNK_DATA_SIZE + 1]));
+        assert!(!needs_chunking(&[0u8; 100]));
+        assert!(!needs_chunking(&[0u8; CHUNK_DATA_SIZE]));
+        assert!(needs_chunking(&[0u8; CHUNK_DATA_SIZE + 1]));
     }
 
     #[test]

@@ -69,10 +69,7 @@ mod tests {
     fn test_baseline_denomination() {
         // At baseline: twap = 1 Seed in micro-seeds, infra_metric = 1
         let denom = compute_denomination(MICRO_SEEDS_PER_SEED, 1).expect("baseline denom");
-        assert_eq!(
-            denom,
-            MICRO_SEEDS_PER_SEED as u64 * MICRO_SEEDS_PER_SEED as u64
-        );
+        assert_eq!(denom, MICRO_SEEDS_PER_SEED * MICRO_SEEDS_PER_SEED);
     }
 
     #[test]
@@ -84,13 +81,13 @@ mod tests {
 
     #[test]
     fn test_zero_twap_rejected() {
-        let err = compute_denomination(0, 1).unwrap_err();
+        let err = compute_denomination(0, 1).expect_err("zero twap rejected");
         assert!(matches!(err, OracleError::InvalidDenomination(_)));
     }
 
     #[test]
     fn test_zero_infra_rejected() {
-        let err = compute_denomination(100, 0).unwrap_err();
+        let err = compute_denomination(100, 0).expect_err("zero infra rejected");
         assert!(matches!(err, OracleError::InvalidDenomination(_)));
     }
 
