@@ -1,0 +1,35 @@
+[package]
+name = "ochra-integration-tests"
+version.workspace = true
+edition.workspace = true
+publish = false
+
+# This crate has no library; it only contains integration tests.
+[lib]
+name = "ochra_integration_tests"
+path = "src/lib.rs"
+
+[dependencies]
+# All workspace crates needed by integration tests
+ochra-crypto = { path = "../ochra-crypto" }
+ochra-types = { path = "../ochra-types" }
+ochra-db = { path = "../ochra-db" }
+ochra-transport = { path = "../ochra-transport" }
+ochra-dht = { path = "../ochra-dht" }
+ochra-onion = { path = "../ochra-onion" }
+ochra-storage = { path = "../ochra-storage" }
+ochra-mls = { path = "../ochra-mls" }
+ochra-frost = { path = "../ochra-frost" }
+ochra-guardian = { path = "../ochra-guardian" }
+ochra-revenue = { path = "../ochra-revenue" }
+ochra-mint = { path = "../ochra-mint" }
+ochra-nullifier = { path = "../ochra-nullifier" }
+ochra-spend = { path = "../ochra-spend" }
+ochra-vys = { path = "../ochra-vys" }
+
+# External dependencies used in tests
+tokio = { workspace = true, features = ["full", "test-util"] }
+serde_json.workspace = true
+hex.workspace = true
+rand.workspace = true
+rusqlite.workspace = true

@@ -22,6 +22,7 @@ members = [
     "crates/ochra-revenue",
     "crates/ochra-guardian",
     "crates/ochra-daemon",
+    "crates/ochra-integration-tests",
 ]
 
 [workspace.package]

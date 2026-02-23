@@ -1474,6 +1474,32 @@ dependencies = [
 ]
 
 [[package]]
+name = "ochra-integration-tests"
+version = "0.1.0"
+dependencies = [
+ "hex",
+ "ochra-crypto",
+ "ochra-db",
+ "ochra-dht",
+ "ochra-frost",
+ "ochra-guardian",
+ "ochra-mint",
+ "ochra-mls",
+ "ochra-nullifier",
+ "ochra-onion",
+ "ochra-revenue",
+ "ochra-spend",
+ "ochra-storage",
+ "ochra-transport",
+ "ochra-types",
+ "ochra-vys",
+ "rand 0.8.5",
+ "rusqlite",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
 name = "ochra-invite"
 version = "0.1.0"
 dependencies = [
