@@ -99,8 +99,16 @@ mod tests {
     fn test_db() -> Connection {
         let conn = crate::open_memory().expect("open test db");
         // Insert a space first (foreign key)
-        spaces::insert(&conn, &[1u8; 32], "Test", "storefront", "host", &[2u8; 32], 1000)
-            .expect("insert space");
+        spaces::insert(
+            &conn,
+            &[1u8; 32],
+            "Test",
+            "storefront",
+            "host",
+            &[2u8; 32],
+            1000,
+        )
+        .expect("insert space");
         conn
     }
 

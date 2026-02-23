@@ -212,14 +212,8 @@ impl RoutingTable {
     /// and insert `new_node` in its place.
     ///
     /// Call this after a failed ping to the LRS node returned by [`add_node`].
-    pub fn evict_and_insert(
-        &mut self,
-        stale_id: &NodeId,
-        new_node: NodeInfo,
-    ) -> Result<()> {
-        let bucket_idx = self
-            .bucket_index(stale_id)
-            .ok_or(DhtError::BucketFull)?;
+    pub fn evict_and_insert(&mut self, stale_id: &NodeId, new_node: NodeInfo) -> Result<()> {
+        let bucket_idx = self.bucket_index(stale_id).ok_or(DhtError::BucketFull)?;
 
         let bucket = &mut self.buckets[bucket_idx];
 
@@ -290,8 +284,7 @@ impl RoutingTable {
             .iter()
             .enumerate()
             .filter(|(_, b)| {
-                !b.entries.is_empty()
-                    && now.duration_since(b.last_refresh) > refresh_interval
+                !b.entries.is_empty() && now.duration_since(b.last_refresh) > refresh_interval
             })
             .map(|(i, _)| i)
             .collect()
@@ -406,7 +399,11 @@ impl FindNodeLookup {
             if self.queried.contains(&info.node_id) {
                 continue;
             }
-            if self.candidates.iter().any(|c| c.info.node_id == info.node_id) {
+            if self
+                .candidates
+                .iter()
+                .any(|c| c.info.node_id == info.node_id)
+            {
                 continue;
             }
 

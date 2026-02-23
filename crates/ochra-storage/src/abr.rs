@@ -141,9 +141,10 @@ impl AbrStore {
     /// * `chunk_id` - The 32-byte chunk identifier.
     /// * `current_time` - The current Unix timestamp (used to update dynamic age).
     pub fn get_chunk(&mut self, chunk_id: &[u8; 32], current_time: u64) -> Result<&[u8]> {
-        let entry = self.entries.get_mut(chunk_id).ok_or_else(|| {
-            StorageError::ChunkNotFound(hex::encode(chunk_id))
-        })?;
+        let entry = self
+            .entries
+            .get_mut(chunk_id)
+            .ok_or_else(|| StorageError::ChunkNotFound(hex::encode(chunk_id)))?;
 
         entry.meta.access_count += 1;
         entry.meta.dynamic_age = current_time;

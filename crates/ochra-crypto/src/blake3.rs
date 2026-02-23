@@ -199,7 +199,10 @@ mod tests {
 
         // All context strings should start with "Ochra v1 "
         for ctx in contexts::ALL_CONTEXTS {
-            assert!(ctx.starts_with("Ochra v1 "), "Context string '{ctx}' has wrong prefix");
+            assert!(
+                ctx.starts_with("Ochra v1 "),
+                "Context string '{ctx}' has wrong prefix"
+            );
         }
     }
 

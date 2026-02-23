@@ -88,10 +88,7 @@ pub fn generate_por_proof(input: &PorProofInput) -> Result<SerializedProof> {
 /// # Returns
 ///
 /// `true` if the proof is valid, `false` otherwise.
-pub fn verify_por_proof(
-    proof: &SerializedProof,
-    public_inputs: &PorPublicInputs,
-) -> bool {
+pub fn verify_por_proof(proof: &SerializedProof, public_inputs: &PorPublicInputs) -> bool {
     if public_inputs.chunk_indices.len() != public_inputs.chunk_hashes.len() {
         return false;
     }

@@ -102,9 +102,8 @@ pub fn solve_pow(challenge: &PowChallenge, content_hash: &[u8; 32]) -> Result<Po
 ///
 /// `true` if the proof is valid, `false` otherwise.
 pub fn verify_pow(challenge: &PowChallenge, solution: &PowSolution) -> bool {
-    let mut data = Vec::with_capacity(
-        challenge.nonce_prefix.len() + challenge.target_hash.len() + 32,
-    );
+    let mut data =
+        Vec::with_capacity(challenge.nonce_prefix.len() + challenge.target_hash.len() + 32);
     data.extend_from_slice(&challenge.nonce_prefix);
     data.extend_from_slice(&challenge.target_hash);
     // Note: content_hash is embedded in the target_hash for verification

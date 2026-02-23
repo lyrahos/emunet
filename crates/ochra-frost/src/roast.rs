@@ -150,12 +150,13 @@ impl RoastSession {
 
     /// Mark an attempt as ready to collect shares (commitments phase done).
     pub fn advance_to_shares(&mut self, attempt_index: usize) -> Result<()> {
-        let attempt = self.attempts.get_mut(attempt_index).ok_or_else(|| {
-            FrostCoordError::InvalidState {
-                expected: format!("attempt {attempt_index} exists"),
-                actual: "attempt not found".to_string(),
-            }
-        })?;
+        let attempt =
+            self.attempts
+                .get_mut(attempt_index)
+                .ok_or_else(|| FrostCoordError::InvalidState {
+                    expected: format!("attempt {attempt_index} exists"),
+                    actual: "attempt not found".to_string(),
+                })?;
 
         if attempt.state != SessionState::CollectingCommitments {
             return Err(FrostCoordError::InvalidState {
@@ -224,10 +225,7 @@ impl RoastSession {
             let sig = self.aggregate_shares(attempt_idx)?;
             self.final_signature = Some(sig.clone());
 
-            tracing::info!(
-                attempt = attempt_idx,
-                "ROAST session complete"
-            );
+            tracing::info!(attempt = attempt_idx, "ROAST session complete");
 
             return Ok(Some(sig));
         }
@@ -283,12 +281,13 @@ impl RoastSession {
     /// This v1 implementation hashes all shares together as a placeholder.
     /// A real implementation would call `ochra_crypto::frost::aggregate`.
     fn aggregate_shares(&self, attempt_index: usize) -> Result<Vec<u8>> {
-        let attempt = self.attempts.get(attempt_index).ok_or_else(|| {
-            FrostCoordError::InvalidState {
-                expected: format!("attempt {attempt_index} exists"),
-                actual: "attempt not found".to_string(),
-            }
-        })?;
+        let attempt =
+            self.attempts
+                .get(attempt_index)
+                .ok_or_else(|| FrostCoordError::InvalidState {
+                    expected: format!("attempt {attempt_index} exists"),
+                    actual: "attempt not found".to_string(),
+                })?;
 
         // Placeholder aggregation: hash all shares together.
         let mut all_share_data = Vec::new();
@@ -339,9 +338,8 @@ mod tests {
 
     #[test]
     fn test_complete_signing_session() {
-        let mut session =
-            RoastSession::start_signing(b"test message".to_vec(), make_signers(5), 3)
-                .expect("start");
+        let mut session = RoastSession::start_signing(b"test message".to_vec(), make_signers(5), 3)
+            .expect("start");
 
         let idx = session.new_attempt().expect("attempt");
         session.advance_to_shares(idx).expect("advance");

@@ -19,9 +19,7 @@
 use std::net::SocketAddr;
 use std::sync::Arc;
 
-use quinn::{
-    ClientConfig, Connection, Endpoint, Incoming, RecvStream, SendStream, ServerConfig,
-};
+use quinn::{ClientConfig, Connection, Endpoint, Incoming, RecvStream, SendStream, ServerConfig};
 use rustls::pki_types::{CertificateDer, PrivateKeyDer, PrivatePkcs8KeyDer};
 
 use crate::TransportError;
@@ -79,7 +77,8 @@ impl QuicNode {
     /// Returns [`TransportError::Tls`] if TLS configuration fails.
     /// Returns [`TransportError::Io`] if the socket cannot be bound.
     pub fn new(config: QuicConfig) -> Result<Self, TransportError> {
-        let (server_config, _cert_der) = build_server_config(config.idle_timeout_ms, config.max_bi_streams)?;
+        let (server_config, _cert_der) =
+            build_server_config(config.idle_timeout_ms, config.max_bi_streams)?;
         let client_config = build_client_config()?;
 
         let mut endpoint = Endpoint::server(server_config, config.bind_addr)
@@ -176,10 +175,7 @@ impl QuicNode {
     /// # Errors
     ///
     /// Returns [`TransportError::Io`] if the write fails.
-    pub async fn send_message(
-        stream: &mut SendStream,
-        data: &[u8],
-    ) -> Result<(), TransportError> {
+    pub async fn send_message(stream: &mut SendStream, data: &[u8]) -> Result<(), TransportError> {
         let len = u32::try_from(data.len()).map_err(|_| {
             TransportError::InvalidPacket("message too large for 4-byte length prefix".to_string())
         })?;
@@ -266,8 +262,7 @@ fn generate_self_signed_cert(
         .map_err(|e| TransportError::Tls(format!("self-signed cert generation failed: {e}")))?;
 
     let cert_der = CertificateDer::from(cert.der().to_vec());
-    let key_der =
-        PrivateKeyDer::Pkcs8(PrivatePkcs8KeyDer::from(key_pair.serialize_der()));
+    let key_der = PrivateKeyDer::Pkcs8(PrivatePkcs8KeyDer::from(key_pair.serialize_der()));
 
     Ok((cert_der, key_der))
 }
@@ -295,14 +290,10 @@ fn build_server_config(
 
     let mut transport = quinn::TransportConfig::default();
     transport.max_idle_timeout(Some(
-        quinn::IdleTimeout::try_from(std::time::Duration::from_millis(u64::from(
-            idle_timeout_ms,
-        )))
-        .map_err(|e| TransportError::Tls(format!("idle timeout config failed: {e}")))?,
+        quinn::IdleTimeout::try_from(std::time::Duration::from_millis(u64::from(idle_timeout_ms)))
+            .map_err(|e| TransportError::Tls(format!("idle timeout config failed: {e}")))?,
     ));
-    transport.max_concurrent_bidi_streams(
-        quinn::VarInt::from_u32(max_bi_streams),
-    );
+    transport.max_concurrent_bidi_streams(quinn::VarInt::from_u32(max_bi_streams));
 
     let mut server_config = ServerConfig::with_crypto(Arc::new(
         quinn::crypto::rustls::QuicServerConfig::try_from(tls_config)

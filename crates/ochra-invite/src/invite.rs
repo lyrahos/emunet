@@ -135,10 +135,7 @@ pub fn create_invite_link(
 
     let json =
         serde_json::to_vec(&invite).map_err(|e| InviteError::Serialization(e.to_string()))?;
-    let encoded = base64::Engine::encode(
-        &base64::engine::general_purpose::URL_SAFE_NO_PAD,
-        &json,
-    );
+    let encoded = base64::Engine::encode(&base64::engine::general_purpose::URL_SAFE_NO_PAD, &json);
 
     Ok(format!("{INVITE_SCHEME}{encoded}"))
 }
@@ -160,11 +157,8 @@ pub fn parse_invite_link(url: &str) -> Result<InviteLink> {
         .strip_prefix(INVITE_SCHEME)
         .ok_or_else(|| InviteError::InvalidUrl("missing ochra://invite/ prefix".to_string()))?;
 
-    let json = base64::Engine::decode(
-        &base64::engine::general_purpose::URL_SAFE_NO_PAD,
-        payload,
-    )
-    .map_err(|e| InviteError::InvalidUrl(format!("base64 decode error: {}", e)))?;
+    let json = base64::Engine::decode(&base64::engine::general_purpose::URL_SAFE_NO_PAD, payload)
+        .map_err(|e| InviteError::InvalidUrl(format!("base64 decode error: {}", e)))?;
 
     let invite: InviteLink = serde_json::from_slice(&json)
         .map_err(|e| InviteError::Malformed(format!("invalid invite JSON: {}", e)))?;
@@ -297,10 +291,8 @@ mod tests {
         tampered.space_name = "Tampered Space".to_string();
 
         let json = serde_json::to_vec(&tampered).expect("serialize");
-        let encoded = base64::Engine::encode(
-            &base64::engine::general_purpose::URL_SAFE_NO_PAD,
-            &json,
-        );
+        let encoded =
+            base64::Engine::encode(&base64::engine::general_purpose::URL_SAFE_NO_PAD, &json);
         let tampered_url = format!("{INVITE_SCHEME}{encoded}");
 
         let result = parse_invite_link(&tampered_url);

@@ -85,8 +85,16 @@ mod tests {
     #[test]
     fn test_insert_and_list() {
         let conn = test_db();
-        insert(&conn, &[1u8; 32], "Test Space", "storefront", "host", &[2u8; 32], 1000)
-            .expect("insert");
+        insert(
+            &conn,
+            &[1u8; 32],
+            "Test Space",
+            "storefront",
+            "host",
+            &[2u8; 32],
+            1000,
+        )
+        .expect("insert");
 
         let spaces = list(&conn).expect("list");
         assert_eq!(spaces.len(), 1);
@@ -98,8 +106,10 @@ mod tests {
     #[test]
     fn test_pin_space() {
         let conn = test_db();
-        insert(&conn, &[1u8; 32], "Space A", "forum", "member", &[2u8; 32], 1000)
-            .expect("insert");
+        insert(
+            &conn, &[1u8; 32], "Space A", "forum", "member", &[2u8; 32], 1000,
+        )
+        .expect("insert");
 
         set_pinned(&conn, &[1u8; 32], true).expect("pin");
         let spaces = list(&conn).expect("list");

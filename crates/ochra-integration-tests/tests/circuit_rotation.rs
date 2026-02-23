@@ -26,13 +26,7 @@ use ochra_onion::{CIRCUIT_HOPS, CIRCUIT_LIFETIME_SECS, SPHINX_PACKET_SIZE};
 use ochra_types::network::RelayDescriptor;
 
 /// Create a relay descriptor with unique identity and network properties.
-fn make_relay(
-    id_byte: u8,
-    ip: &str,
-    as_num: u32,
-    country: [u8; 2],
-    score: f32,
-) -> RelayDescriptor {
+fn make_relay(id_byte: u8, ip: &str, as_num: u32, country: [u8; 2], score: f32) -> RelayDescriptor {
     let secret = x25519::X25519StaticSecret::random();
     let pk = secret.public_key();
     RelayDescriptor {
@@ -153,11 +147,7 @@ async fn circuit_construction_three_hops() {
     // Step 5: Verify circuit identity
     // =========================================================
     let circuit_id = circuit.circuit_id();
-    assert_eq!(
-        circuit_id.len(),
-        16,
-        "Circuit ID must be 16 bytes"
-    );
+    assert_eq!(circuit_id.len(), 16, "Circuit ID must be 16 bytes");
 
     // Circuit IDs should be unique between circuits.
     let (r1b, _) = make_relay_with_dh(4);
@@ -247,10 +237,7 @@ async fn circuit_builder_error_handling() {
     // Too few relays.
     let (r1b, _) = make_relay_with_dh(5);
 
-    let result2 = CircuitBuilder::new()
-        .add_relay(r1b)
-        .expect("add")
-        .build();
+    let result2 = CircuitBuilder::new().add_relay(r1b).expect("add").build();
 
     assert!(
         result2.is_err(),
@@ -337,7 +324,13 @@ async fn relay_selection_with_constraints() {
     let subnets: HashSet<String> = selected
         .iter()
         .map(|r| {
-            let parts: Vec<&str> = r.ip_addr.split(':').next().unwrap_or("").split('.').collect();
+            let parts: Vec<&str> = r
+                .ip_addr
+                .split(':')
+                .next()
+                .unwrap_or("")
+                .split('.')
+                .collect();
             format!("{}.{}.{}", parts[0], parts[1], parts[2])
         })
         .collect();
@@ -661,7 +654,10 @@ async fn circuit_rotation_readiness() {
 
     assert!(!circuit::needs_rotation(&circuit));
     assert!(!circuit.is_expired());
-    assert!(circuit.age_secs() < 5, "Fresh circuit should be < 5 seconds old");
+    assert!(
+        circuit.age_secs() < 5,
+        "Fresh circuit should be < 5 seconds old"
+    );
     assert!(
         circuit.remaining_secs() > CIRCUIT_LIFETIME_SECS - 5,
         "Fresh circuit should have nearly full lifetime remaining"

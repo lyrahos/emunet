@@ -61,8 +61,7 @@ impl CoverTrafficConfig {
     /// The interval is clamped to `[MIN_COVER_INTERVAL_MS, MAX_COVER_INTERVAL_MS]`.
     pub fn new(mean_interval_ms: u64) -> Self {
         Self {
-            mean_interval_ms: mean_interval_ms
-                .clamp(MIN_COVER_INTERVAL_MS, MAX_COVER_INTERVAL_MS),
+            mean_interval_ms: mean_interval_ms.clamp(MIN_COVER_INTERVAL_MS, MAX_COVER_INTERVAL_MS),
             enabled: true,
         }
     }
@@ -111,7 +110,8 @@ impl CoverTrafficGenerator {
     /// Draws from an exponential distribution (Poisson inter-arrival time)
     /// using the configured mean interval.
     pub fn next_delay(&self) -> Duration {
-        let u: f64 = rand::Rng::gen_range(&mut rand::thread_rng(), f64::EPSILON..(1.0 - f64::EPSILON));
+        let u: f64 =
+            rand::Rng::gen_range(&mut rand::thread_rng(), f64::EPSILON..(1.0 - f64::EPSILON));
         let delay_ms = next_cover_delay_ms(self.config.mean_interval_ms, u);
         Duration::from_millis(delay_ms)
     }

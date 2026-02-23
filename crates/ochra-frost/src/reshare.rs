@@ -114,14 +114,10 @@ pub fn initiate_reshare(
     new_threshold: u16,
 ) -> Result<ReshareCeremony> {
     if old_quorum.is_empty() {
-        return Err(FrostCoordError::Reshare(
-            "old quorum is empty".to_string(),
-        ));
+        return Err(FrostCoordError::Reshare("old quorum is empty".to_string()));
     }
     if new_quorum.is_empty() {
-        return Err(FrostCoordError::Reshare(
-            "new quorum is empty".to_string(),
-        ));
+        return Err(FrostCoordError::Reshare("new quorum is empty".to_string()));
     }
     if new_threshold == 0 || new_threshold as usize > new_quorum.len() {
         return Err(FrostCoordError::Reshare(format!(
@@ -199,15 +195,15 @@ impl ReshareCeremony {
         }
 
         if !self.old_quorum.contains(&commitment.participant_id) {
-            return Err(FrostCoordError::UnknownSigner(
-                hex::encode(commitment.participant_id),
-            ));
+            return Err(FrostCoordError::UnknownSigner(hex::encode(
+                commitment.participant_id,
+            )));
         }
 
         if self.commitments.contains_key(&commitment.participant_id) {
-            return Err(FrostCoordError::DuplicateContribution(
-                hex::encode(commitment.participant_id),
-            ));
+            return Err(FrostCoordError::DuplicateContribution(hex::encode(
+                commitment.participant_id,
+            )));
         }
 
         let pid = commitment.participant_id;
@@ -234,22 +230,19 @@ impl ReshareCeremony {
         }
 
         if !self.old_quorum.contains(&package.sender_id) {
-            return Err(FrostCoordError::UnknownSigner(
-                hex::encode(package.sender_id),
-            ));
+            return Err(FrostCoordError::UnknownSigner(hex::encode(
+                package.sender_id,
+            )));
         }
 
         if !self.new_quorum.contains(&package.recipient_id) {
-            return Err(FrostCoordError::UnknownSigner(
-                hex::encode(package.recipient_id),
-            ));
+            return Err(FrostCoordError::UnknownSigner(hex::encode(
+                package.recipient_id,
+            )));
         }
 
         let sender = package.sender_id;
-        self.distributions
-            .entry(sender)
-            .or_default()
-            .push(package);
+        self.distributions.entry(sender).or_default().push(package);
 
         // Advance to Phase 3 when all old quorum members have distributed
         // shares to all new quorum members.
@@ -280,15 +273,18 @@ impl ReshareCeremony {
         }
 
         if !self.new_quorum.contains(&verification.participant_id) {
-            return Err(FrostCoordError::UnknownSigner(
-                hex::encode(verification.participant_id),
-            ));
+            return Err(FrostCoordError::UnknownSigner(hex::encode(
+                verification.participant_id,
+            )));
         }
 
-        if self.verifications.contains_key(&verification.participant_id) {
-            return Err(FrostCoordError::DuplicateContribution(
-                hex::encode(verification.participant_id),
-            ));
+        if self
+            .verifications
+            .contains_key(&verification.participant_id)
+        {
+            return Err(FrostCoordError::DuplicateContribution(hex::encode(
+                verification.participant_id,
+            )));
         }
 
         let pid = verification.participant_id;

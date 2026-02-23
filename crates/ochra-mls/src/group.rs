@@ -445,9 +445,7 @@ mod tests {
         let (mut group, _) = add_member(group, kp2).expect("add");
 
         let plaintext = b"Hello, group!";
-        let ciphertext = group
-            .encrypt_message(&[1; 32], plaintext)
-            .expect("encrypt");
+        let ciphertext = group.encrypt_message(&[1; 32], plaintext).expect("encrypt");
 
         let decrypted = group.decrypt_message(&ciphertext).expect("decrypt");
         assert_eq!(decrypted, plaintext);

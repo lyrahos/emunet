@@ -135,8 +135,10 @@ mod tests {
     #[test]
     fn test_derive_key_different_salts() {
         let password = b"password";
-        let key1 = derive_key_custom(password, b"salt111111111111", 1024, 1, 1, 32).expect("derive");
-        let key2 = derive_key_custom(password, b"salt222222222222", 1024, 1, 1, 32).expect("derive");
+        let key1 =
+            derive_key_custom(password, b"salt111111111111", 1024, 1, 1, 32).expect("derive");
+        let key2 =
+            derive_key_custom(password, b"salt222222222222", 1024, 1, 1, 32).expect("derive");
         assert_ne!(key1, key2);
     }
 

@@ -52,8 +52,7 @@ impl PedersenParams {
             bytes.copy_from_slice(chunk);
             repr[i] = u64::from_le_bytes(bytes);
         }
-        let scalar = Fr::from_bigint(ark_ff::BigInteger256::new(repr))
-            .unwrap_or(Fr::from(1u64));
+        let scalar = Fr::from_bigint(ark_ff::BigInteger256::new(repr)).unwrap_or(Fr::from(1u64));
         let h = g.mul(scalar);
 
         Self { g, h }

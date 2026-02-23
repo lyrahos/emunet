@@ -68,11 +68,8 @@ pub fn generate_minting_proof(input: &MintingProofInput) -> Result<SerializedPro
     // Stub proof: BLAKE3::hash(merkle_root || total_amount || epoch)
     let amount_bytes = input.total_amount.to_le_bytes();
     let epoch_bytes = input.epoch.to_le_bytes();
-    let fields = blake3::encode_multi_field(&[
-        &input.receipt_merkle_root[..],
-        &amount_bytes,
-        &epoch_bytes,
-    ]);
+    let fields =
+        blake3::encode_multi_field(&[&input.receipt_merkle_root[..], &amount_bytes, &epoch_bytes]);
     let proof_hash = blake3::hash(&fields);
 
     tracing::debug!(
@@ -94,10 +91,7 @@ pub fn generate_minting_proof(input: &MintingProofInput) -> Result<SerializedPro
 /// # Returns
 ///
 /// `true` if the proof is valid, `false` otherwise.
-pub fn verify_minting_proof(
-    proof: &SerializedProof,
-    public_inputs: &MintingPublicInputs,
-) -> bool {
+pub fn verify_minting_proof(proof: &SerializedProof, public_inputs: &MintingPublicInputs) -> bool {
     if public_inputs.total_amount == 0 || public_inputs.receipt_merkle_root == [0u8; 32] {
         return false;
     }

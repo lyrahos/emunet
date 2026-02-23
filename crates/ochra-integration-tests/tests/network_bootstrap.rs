@@ -147,34 +147,23 @@ async fn network_bootstrap_three_nodes() {
     // Results should be sorted by XOR distance.
     let d0 = RoutingTable::xor_distance(&closest_random[0].node_id, &random_target);
     let d1 = RoutingTable::xor_distance(&closest_random[1].node_id, &random_target);
-    assert!(
-        d0 <= d1,
-        "Results must be sorted by ascending XOR distance"
-    );
+    assert!(d0 <= d1, "Results must be sorted by ascending XOR distance");
 
     // =========================================================
     // Step 5: XOR distance properties
     // =========================================================
     // Self-distance is zero.
     let self_dist = RoutingTable::xor_distance(&node_a.node_id, &node_a.node_id);
-    assert_eq!(
-        self_dist,
-        [0u8; 32],
-        "XOR distance to self must be zero"
-    );
+    assert_eq!(self_dist, [0u8; 32], "XOR distance to self must be zero");
 
     // Symmetry: d(A,B) == d(B,A).
     let d_ab = RoutingTable::xor_distance(&node_a.node_id, &node_b.node_id);
     let d_ba = RoutingTable::xor_distance(&node_b.node_id, &node_a.node_id);
-    assert_eq!(
-        d_ab, d_ba,
-        "XOR distance must be symmetric"
-    );
+    assert_eq!(d_ab, d_ba, "XOR distance must be symmetric");
 
     // Non-zero for different nodes.
     assert_ne!(
-        d_ab,
-        [0u8; 32],
+        d_ab, [0u8; 32],
         "XOR distance between different nodes must be non-zero"
     );
 
@@ -186,11 +175,7 @@ async fn network_bootstrap_three_nodes() {
         matches!(update_result, AddNodeResult::Updated),
         "Re-adding an existing node should update, not insert"
     );
-    assert_eq!(
-        rt_a.len(),
-        2,
-        "Table size should not change after update"
-    );
+    assert_eq!(rt_a.len(), 2, "Table size should not change after update");
 
     // =========================================================
     // Step 7: Node removal
@@ -275,13 +260,9 @@ async fn dht_record_store_mutable() {
     let salt = b"test-mutable-salt";
 
     // Create mutable record with seq=1.
-    let record_v1 = bep44::create_mutable_record(
-        &kp.signing_key,
-        salt,
-        1,
-        b"value version 1".to_vec(),
-    )
-    .expect("Mutable record v1 creation should succeed");
+    let record_v1 =
+        bep44::create_mutable_record(&kp.signing_key, salt, 1, b"value version 1".to_vec())
+            .expect("Mutable record v1 creation should succeed");
 
     let key = record_v1.storage_key();
 
@@ -307,13 +288,9 @@ async fn dht_record_store_mutable() {
         .expect("Store mutable record v1 should succeed");
 
     // Update to seq=2 should succeed.
-    let record_v2 = bep44::create_mutable_record(
-        &kp.signing_key,
-        salt,
-        2,
-        b"value version 2".to_vec(),
-    )
-    .expect("Mutable record v2 creation should succeed");
+    let record_v2 =
+        bep44::create_mutable_record(&kp.signing_key, salt, 2, b"value version 2".to_vec())
+            .expect("Mutable record v2 creation should succeed");
 
     store
         .put(record_v2)
@@ -327,13 +304,9 @@ async fn dht_record_store_mutable() {
     );
 
     // Stale sequence (seq=1) should be rejected.
-    let stale_record = bep44::create_mutable_record(
-        &kp.signing_key,
-        salt,
-        1,
-        b"stale attempt".to_vec(),
-    )
-    .expect("Stale record creation should succeed");
+    let stale_record =
+        bep44::create_mutable_record(&kp.signing_key, salt, 1, b"stale attempt".to_vec())
+            .expect("Stale record creation should succeed");
 
     let stale_result = store.put(stale_record);
     assert!(
@@ -342,13 +315,9 @@ async fn dht_record_store_mutable() {
     );
 
     // Equal sequence (seq=2) should also be rejected.
-    let equal_seq_record = bep44::create_mutable_record(
-        &kp.signing_key,
-        salt,
-        2,
-        b"equal seq attempt".to_vec(),
-    )
-    .expect("Equal-seq record creation should succeed");
+    let equal_seq_record =
+        bep44::create_mutable_record(&kp.signing_key, salt, 2, b"equal seq attempt".to_vec())
+            .expect("Equal-seq record creation should succeed");
 
     let equal_result = store.put(equal_seq_record);
     assert!(
@@ -357,13 +326,9 @@ async fn dht_record_store_mutable() {
     );
 
     // Forward sequence (seq=3) should succeed.
-    let record_v3 = bep44::create_mutable_record(
-        &kp.signing_key,
-        salt,
-        3,
-        b"value version 3".to_vec(),
-    )
-    .expect("Mutable record v3 creation should succeed");
+    let record_v3 =
+        bep44::create_mutable_record(&kp.signing_key, salt, 3, b"value version 3".to_vec())
+            .expect("Mutable record v3 creation should succeed");
 
     store
         .put(record_v3)
@@ -379,13 +344,9 @@ async fn dht_record_store_tamper_detection() {
     // Verify that tampered mutable records are rejected.
     let kp = ed25519::KeyPair::generate();
 
-    let mut record = bep44::create_mutable_record(
-        &kp.signing_key,
-        b"salt",
-        1,
-        b"original value".to_vec(),
-    )
-    .expect("Record creation should succeed");
+    let mut record =
+        bep44::create_mutable_record(&kp.signing_key, b"salt", 1, b"original value".to_vec())
+            .expect("Record creation should succeed");
 
     // Tamper with the value.
     if let DhtRecord::Mutable { ref mut value, .. } = record {
@@ -433,7 +394,10 @@ async fn dht_record_store_expiration() {
     assert_eq!(store.len(), 1, "Store should have 1 record");
 
     // Record is accessible immediately.
-    assert!(store.get(&key).is_some(), "Record should be accessible before TTL");
+    assert!(
+        store.get(&key).is_some(),
+        "Record should be accessible before TTL"
+    );
 
     // Wait for TTL to expire.
     tokio::time::sleep(Duration::from_millis(100)).await;
@@ -473,10 +437,7 @@ async fn find_node_lookup_convergence() {
 
     // Get seed nodes from routing table.
     let seed_nodes = rt.find_closest(&target, 3);
-    assert!(
-        !seed_nodes.is_empty(),
-        "Should have seed nodes for lookup"
-    );
+    assert!(!seed_nodes.is_empty(), "Should have seed nodes for lookup");
 
     let mut lookup = FindNodeLookup::new(target, seed_nodes);
     assert!(
@@ -516,10 +477,7 @@ async fn find_node_lookup_convergence() {
     );
 
     let results = lookup.results();
-    assert!(
-        !results.is_empty(),
-        "Lookup should produce results"
-    );
+    assert!(!results.is_empty(), "Lookup should produce results");
 
     // Results should be sorted by distance to target.
     for i in 0..results.len().saturating_sub(1) {
@@ -612,11 +570,7 @@ async fn bucket_full_eviction() {
             // Simulate failed ping to LRS node -> evict and insert new node.
             rt.evict_and_insert(&least_recently_seen.node_id, overflow_node)
                 .expect("Eviction should succeed");
-            assert_eq!(
-                rt.len(),
-                k,
-                "Table size should remain K after eviction"
-            );
+            assert_eq!(rt.len(), k, "Table size should remain K after eviction");
         }
         other => panic!("Expected BucketFull, got {:?}", other),
     }

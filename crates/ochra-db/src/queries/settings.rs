@@ -6,15 +6,11 @@ use crate::{DbError, Result};
 
 /// Get a setting value by key.
 pub fn get(conn: &Connection, key: &str) -> Result<String> {
-    conn.query_row(
-        "SELECT value FROM settings WHERE key = ?1",
-        [key],
-        |row| row.get(0),
-    )
+    conn.query_row("SELECT value FROM settings WHERE key = ?1", [key], |row| {
+        row.get(0)
+    })
     .map_err(|e| match e {
-        rusqlite::Error::QueryReturnedNoRows => {
-            DbError::NotFound(format!("setting '{key}'"))
-        }
+        rusqlite::Error::QueryReturnedNoRows => DbError::NotFound(format!("setting '{key}'")),
         other => DbError::Sqlite(other),
     })
 }

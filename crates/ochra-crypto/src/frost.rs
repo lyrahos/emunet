@@ -60,9 +60,13 @@ pub fn dkg(
 
     // Use the trusted dealer key generation for simplicity in v1
     // (Production should use the 3-round DKG from Section 12.6)
-    let (shares, pubkey_package) =
-        frost::keys::generate_with_dealer(max_signers, min_signers, frost::keys::IdentifierList::Default, &mut rng)
-            .map_err(|e| CryptoError::Frost(e.to_string()))?;
+    let (shares, pubkey_package) = frost::keys::generate_with_dealer(
+        max_signers,
+        min_signers,
+        frost::keys::IdentifierList::Default,
+        &mut rng,
+    )
+    .map_err(|e| CryptoError::Frost(e.to_string()))?;
 
     let key_packages: Vec<FrostKeyPackage> = shares
         .into_values()
@@ -172,7 +176,8 @@ mod tests {
         let message = b"test message for FROST signing";
 
         // Round 1: First 3 signers generate nonces
-        let mut commitments_map: BTreeMap<frost::Identifier, frost::round1::SigningCommitments> = BTreeMap::new();
+        let mut commitments_map: BTreeMap<frost::Identifier, frost::round1::SigningCommitments> =
+            BTreeMap::new();
         let mut signing_nonces = Vec::new();
 
         for kp in key_packages.iter().take(3) {
@@ -192,8 +197,8 @@ mod tests {
         }
 
         // Aggregate
-        let signature = aggregate(&signing_package, &signature_shares, &pubkey_package)
-            .expect("aggregate");
+        let signature =
+            aggregate(&signing_package, &signature_shares, &pubkey_package).expect("aggregate");
 
         // Verify
         verify_group_signature(message, &signature, &pubkey_package).expect("verify");
@@ -209,7 +214,8 @@ mod tests {
         let message = b"test";
 
         // Get 3 commitments (required for signing package) but only 2 shares
-        let mut commitments_map: BTreeMap<frost::Identifier, frost::round1::SigningCommitments> = BTreeMap::new();
+        let mut commitments_map: BTreeMap<frost::Identifier, frost::round1::SigningCommitments> =
+            BTreeMap::new();
         let mut signing_nonces = Vec::new();
 
         for kp in key_packages.iter().take(3) {
@@ -229,6 +235,9 @@ mod tests {
 
         // Aggregation with insufficient shares should fail
         let result = aggregate(&signing_package, &signature_shares, &pubkey_package);
-        assert!(result.is_err(), "Aggregation with fewer than threshold shares should fail");
+        assert!(
+            result.is_err(),
+            "Aggregation with fewer than threshold shares should fail"
+        );
     }
 }

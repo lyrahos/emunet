@@ -78,10 +78,8 @@ fn generate_blake3_vectors() -> BTreeMap<String, TestVector> {
     );
 
     // Vector 4: Keyed hash (Merkle inner node)
-    let k_inner = ochra_crypto::blake3::derive_key(
-        ochra_crypto::blake3::contexts::MERKLE_INNER_NODE,
-        b"",
-    );
+    let k_inner =
+        ochra_crypto::blake3::derive_key(ochra_crypto::blake3::contexts::MERKLE_INNER_NODE, b"");
     let mac = ochra_crypto::blake3::keyed_hash(&k_inner, &[0u8; 64]);
     vectors.insert(
         "blake3_keyed_hash_merkle".to_string(),
@@ -179,10 +177,9 @@ fn generate_hybrid_session_vector() -> BTreeMap<String, TestVector> {
     let mut vectors = BTreeMap::new();
 
     // RFC 7748 Section 6.1 shared secret
-    let x25519_shared = hex::decode(
-        "4a5d9d5ba4ce2de1728e3bf480350f25e07e21c947d19e3376f09b3c1e161742",
-    )
-    .expect("valid hex");
+    let x25519_shared =
+        hex::decode("4a5d9d5ba4ce2de1728e3bf480350f25e07e21c947d19e3376f09b3c1e161742")
+            .expect("valid hex");
 
     let mlkem_shared = [0u8; 31].iter().chain(&[1u8]).copied().collect::<Vec<u8>>();
     let mut mlkem_bytes = [0u8; 32];
@@ -205,10 +202,7 @@ fn generate_hybrid_session_vector() -> BTreeMap<String, TestVector> {
                 ("x25519_shared".to_string(), hex::encode(&x25519_shared)),
                 ("mlkem768_shared".to_string(), hex::encode(&mlkem_bytes)),
             ]),
-            outputs: BTreeMap::from([(
-                "session_secret".to_string(),
-                hex::encode(session_secret),
-            )]),
+            outputs: BTreeMap::from([("session_secret".to_string(), hex::encode(session_secret))]),
         },
     );
 
@@ -231,7 +225,10 @@ fn generate_ecies_vector() -> BTreeMap<String, TestVector> {
         TestVector {
             description: "ECIES-X25519-ChaCha20-BLAKE3 deterministic encryption".to_string(),
             inputs: BTreeMap::from([
-                ("recipient_pk".to_string(), hex::encode(recipient_pk.to_bytes())),
+                (
+                    "recipient_pk".to_string(),
+                    hex::encode(recipient_pk.to_bytes()),
+                ),
                 ("plaintext".to_string(), hex::encode(plaintext)),
                 ("randomness".to_string(), hex::encode(randomness)),
             ]),
@@ -270,8 +267,7 @@ fn generate_ratchet_vectors() -> BTreeMap<String, TestVector> {
     vectors.insert(
         "ratchet_root_kdf".to_string(),
         TestVector {
-            description: "Double Ratchet root KDF: KDF_RK(rk=0x00*32, dh_out=0xFF*32)"
-                .to_string(),
+            description: "Double Ratchet root KDF: KDF_RK(rk=0x00*32, dh_out=0xFF*32)".to_string(),
             inputs: BTreeMap::from([
                 ("rk".to_string(), hex::encode(rk)),
                 ("dh_out".to_string(), hex::encode(dh_out)),
@@ -285,14 +281,10 @@ fn generate_ratchet_vectors() -> BTreeMap<String, TestVector> {
 
     // Chain KDF
     let ck = [0u8; 32];
-    let new_ck = ochra_crypto::blake3::derive_key(
-        ochra_crypto::blake3::contexts::RATCHET_CHAIN_KEY,
-        &ck,
-    );
-    let msg_key = ochra_crypto::blake3::derive_key(
-        ochra_crypto::blake3::contexts::RATCHET_MSG_KEY,
-        &ck,
-    );
+    let new_ck =
+        ochra_crypto::blake3::derive_key(ochra_crypto::blake3::contexts::RATCHET_CHAIN_KEY, &ck);
+    let msg_key =
+        ochra_crypto::blake3::derive_key(ochra_crypto::blake3::contexts::RATCHET_MSG_KEY, &ck);
 
     vectors.insert(
         "ratchet_chain_kdf".to_string(),
@@ -325,7 +317,9 @@ fn generate_bloom_filter_vector() -> BTreeMap<String, TestVector> {
 
     let mut indices = Vec::new();
     for i in 0u64..20 {
-        let bit_index = (h1.wrapping_add(i.wrapping_mul(h2)).wrapping_add(i.wrapping_mul(i)))
+        let bit_index = (h1
+            .wrapping_add(i.wrapping_mul(h2))
+            .wrapping_add(i.wrapping_mul(i)))
             % filter_size_bits;
         indices.push(bit_index.to_string());
     }
@@ -398,8 +392,7 @@ fn main() {
         let path = "tests/fixtures/test_vectors.json";
         match std::fs::read_to_string(path) {
             Ok(content) => {
-                let vectors: TestVectors =
-                    serde_json::from_str(&content).expect("valid JSON");
+                let vectors: TestVectors = serde_json::from_str(&content).expect("valid JSON");
                 if verify_vectors(&vectors) {
                     eprintln!("All test vectors verified successfully.");
                     std::process::exit(0);

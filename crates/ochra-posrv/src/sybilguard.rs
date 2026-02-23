@@ -127,9 +127,10 @@ impl TrustGraph {
     ///
     /// Trust weight in [0.0, 1.0].
     pub fn compute_trust_weight(&self, node_id: &[u8; 32]) -> Result<f64> {
-        let node_data = self.nodes.get(node_id).ok_or_else(|| {
-            PoSrvError::NodeNotFound(hex::encode(node_id))
-        })?;
+        let node_data = self
+            .nodes
+            .get(node_id)
+            .ok_or_else(|| PoSrvError::NodeNotFound(hex::encode(node_id)))?;
 
         // If the node has no outgoing edges, trust is 0.
         if node_data.edges.is_empty() {

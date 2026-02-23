@@ -275,10 +275,7 @@ pub async fn get_onion_circuit_health(_state: &Arc<DaemonState>) -> Result {
 }
 
 /// Set per-Space notification settings.
-pub async fn set_group_notification_settings(
-    _state: &Arc<DaemonState>,
-    params: &Value,
-) -> Result {
+pub async fn set_group_notification_settings(_state: &Arc<DaemonState>, params: &Value) -> Result {
     let _group_id = params
         .get("group_id")
         .ok_or_else(|| RpcError::invalid_params("group_id required"))?;

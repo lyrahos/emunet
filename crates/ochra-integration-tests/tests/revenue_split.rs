@@ -55,12 +55,19 @@ fn simulate_purchase(
 ) -> (u64, u64, u64) {
     // Record the purchase transaction.
     let tx_hash = blake3::hash(&[tx_id; 32]);
-    wallet::record_transaction(conn, &tx_hash, "purchase", purchase_amount, 1, BASE_TIME + u64::from(tx_id) * 100)
-        .expect("Transaction recording should succeed");
+    wallet::record_transaction(
+        conn,
+        &tx_hash,
+        "purchase",
+        purchase_amount,
+        1,
+        BASE_TIME + u64::from(tx_id) * 100,
+    )
+    .expect("Transaction recording should succeed");
 
     // Distribute revenue according to split.
-    let (host_share, creator_share, network_share) = splits::distribute(purchase_amount, split)
-        .expect("Revenue distribution should succeed");
+    let (host_share, creator_share, network_share) =
+        splits::distribute(purchase_amount, split).expect("Revenue distribution should succeed");
 
     (host_share, creator_share, network_share)
 }
@@ -146,8 +153,7 @@ async fn revenue_split_custom_60_30_10() {
     // Purchase at rental tier (2 Seeds)
     // =========================================================
     let rental_price = 2 * ochra_types::MICRO_SEEDS_PER_SEED;
-    let (host_r, creator_r, network_r) =
-        simulate_purchase(&conn, rental_price, &split, 2);
+    let (host_r, creator_r, network_r) = simulate_purchase(&conn, rental_price, &split, 2);
 
     assert_eq!(host_r, rental_price * 60 / 100);
     assert_eq!(network_r, rental_price * 10 / 100);
@@ -188,8 +194,8 @@ async fn revenue_split_default_10_70_20() {
 
     // Distribute 100 Seeds.
     let amount = 100 * ochra_types::MICRO_SEEDS_PER_SEED;
-    let (host, creator, network) = splits::distribute(amount, &default)
-        .expect("Distribution should succeed");
+    let (host, creator, network) =
+        splits::distribute(amount, &default).expect("Distribution should succeed");
 
     assert_eq!(host, amount * 10 / 100, "Host should get 10%");
     assert_eq!(network, amount * 20 / 100, "Network should get 20%");
@@ -210,8 +216,8 @@ async fn revenue_split_rounding_correctness() {
 
     // Amount that produces rounding: 100 micro-seeds.
     let amount = 100u64;
-    let (host, creator, network) = splits::distribute(amount, &split)
-        .expect("Distribution should succeed");
+    let (host, creator, network) =
+        splits::distribute(amount, &split).expect("Distribution should succeed");
 
     // Host: 100 * 33 / 100 = 33.
     assert_eq!(host, 33, "Host should get floor(33%)");
@@ -226,8 +232,7 @@ async fn revenue_split_rounding_correctness() {
     );
 
     // Odd amount: 1 micro-seed.
-    let (h1, c1, n1) = splits::distribute(1, &split)
-        .expect("Distribution of 1 should succeed");
+    let (h1, c1, n1) = splits::distribute(1, &split).expect("Distribution of 1 should succeed");
     assert_eq!(
         h1 + c1 + n1,
         1,
@@ -236,13 +241,9 @@ async fn revenue_split_rounding_correctness() {
 
     // Large amount.
     let large = u64::MAX / 200; // Avoid overflow.
-    let (hl, cl, nl) = splits::distribute(large, &split)
-        .expect("Large distribution should succeed");
-    assert_eq!(
-        hl + cl + nl,
-        large,
-        "Large amount shares must sum to total"
-    );
+    let (hl, cl, nl) =
+        splits::distribute(large, &split).expect("Large distribution should succeed");
+    assert_eq!(hl + cl + nl, large, "Large amount shares must sum to total");
 }
 
 #[tokio::test]
@@ -257,8 +258,7 @@ async fn revenue_split_extreme_configurations() {
     splits::validate_split(&all_creator).expect("0/100/0 should be valid");
 
     let amount = 500 * ochra_types::MICRO_SEEDS_PER_SEED;
-    let (h, c, n) = splits::distribute(amount, &all_creator)
-        .expect("Distribution should succeed");
+    let (h, c, n) = splits::distribute(amount, &all_creator).expect("Distribution should succeed");
     assert_eq!(h, 0, "Host gets nothing");
     assert_eq!(c, amount, "Creator gets everything");
     assert_eq!(n, 0, "Network gets nothing");
@@ -271,8 +271,7 @@ async fn revenue_split_extreme_configurations() {
     };
     splits::validate_split(&all_host).expect("100/0/0 should be valid");
 
-    let (h2, c2, n2) = splits::distribute(amount, &all_host)
-        .expect("Distribution should succeed");
+    let (h2, c2, n2) = splits::distribute(amount, &all_host).expect("Distribution should succeed");
     assert_eq!(h2, amount, "Host gets everything");
     assert_eq!(c2, 0, "Creator gets nothing");
     assert_eq!(n2, 0, "Network gets nothing");
@@ -285,8 +284,8 @@ async fn revenue_split_extreme_configurations() {
     };
     splits::validate_split(&all_network).expect("0/0/100 should be valid");
 
-    let (h3, c3, n3) = splits::distribute(amount, &all_network)
-        .expect("Distribution should succeed");
+    let (h3, c3, n3) =
+        splits::distribute(amount, &all_network).expect("Distribution should succeed");
     assert_eq!(h3, 0);
     // Creator gets remainder = amount - 0 - amount = 0.
     assert_eq!(c3, 0, "Creator gets nothing with 0%");
@@ -321,10 +320,7 @@ async fn revenue_split_validation_failures() {
     // Zero amount distribution.
     let valid_split = splits::DEFAULT_SPLIT;
     let zero_result = splits::distribute(0, &valid_split);
-    assert!(
-        zero_result.is_err(),
-        "Distributing zero amount should fail"
-    );
+    assert!(zero_result.is_err(), "Distributing zero amount should fail");
 }
 
 #[tokio::test]
@@ -462,8 +458,8 @@ async fn revenue_split_database_consistency() {
     splits::validate_split(&db_split).expect("DB-loaded split should be valid");
 
     let amount = 1000 * ochra_types::MICRO_SEEDS_PER_SEED;
-    let (h, c, n) = splits::distribute(amount, &db_split)
-        .expect("Distribution with DB split should succeed");
+    let (h, c, n) =
+        splits::distribute(amount, &db_split).expect("Distribution with DB split should succeed");
     assert_eq!(h + c + n, amount, "DB split shares must sum to total");
 }
 
@@ -511,14 +507,9 @@ async fn revenue_split_multiple_purchases() {
 
     // Verify transaction count in DB.
     let tx_count: i64 = conn
-        .query_row(
-            "SELECT COUNT(*) FROM transaction_history",
-            [],
-            |row| row.get(0),
-        )
+        .query_row("SELECT COUNT(*) FROM transaction_history", [], |row| {
+            row.get(0)
+        })
         .expect("Transaction count query should succeed");
-    assert_eq!(
-        tx_count, 100,
-        "Should have 100 transaction records"
-    );
+    assert_eq!(tx_count, 100, "Should have 100 transaction records");
 }

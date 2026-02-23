@@ -57,10 +57,7 @@ pub struct GuardianShare {
 ///
 /// * `requester_proof` - Proof of identity (stub in v1)
 /// * `current_time` - The current Unix timestamp in seconds
-pub fn initiate_recovery(
-    requester_proof: Vec<u8>,
-    current_time: u64,
-) -> RecoveryRequest {
+pub fn initiate_recovery(requester_proof: Vec<u8>, current_time: u64) -> RecoveryRequest {
     tracing::info!(
         initiated_at = current_time,
         veto_expires = current_time + VETO_WINDOW,

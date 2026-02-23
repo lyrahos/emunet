@@ -38,8 +38,7 @@ async fn main() -> anyhow::Result<()> {
     // Initialize tracing
     tracing_subscriber::fmt()
         .with_env_filter(
-            tracing_subscriber::EnvFilter::from_default_env()
-                .add_directive("ochra=info".parse()?),
+            tracing_subscriber::EnvFilter::from_default_env().add_directive("ochra=info".parse()?),
         )
         .init();
 

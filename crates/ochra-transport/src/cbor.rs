@@ -16,9 +16,8 @@ use crate::TransportError;
 /// Returns [`TransportError::Serialization`] if the value cannot be serialized.
 pub fn to_vec<T: Serialize>(value: &T) -> Result<Vec<u8>, TransportError> {
     let mut buf = Vec::new();
-    ciborium::into_writer(value, &mut buf).map_err(|e| {
-        TransportError::Serialization(format!("CBOR serialization failed: {e}"))
-    })?;
+    ciborium::into_writer(value, &mut buf)
+        .map_err(|e| TransportError::Serialization(format!("CBOR serialization failed: {e}")))?;
     Ok(buf)
 }
 
@@ -29,9 +28,8 @@ pub fn to_vec<T: Serialize>(value: &T) -> Result<Vec<u8>, TransportError> {
 /// Returns [`TransportError::Deserialization`] if the bytes cannot be deserialized
 /// into the target type.
 pub fn from_slice<T: DeserializeOwned>(data: &[u8]) -> Result<T, TransportError> {
-    ciborium::from_reader(data).map_err(|e| {
-        TransportError::Deserialization(format!("CBOR deserialization failed: {e}"))
-    })
+    ciborium::from_reader(data)
+        .map_err(|e| TransportError::Deserialization(format!("CBOR deserialization failed: {e}")))
 }
 
 /// Serialize a value to CBOR bytes, returning an error with context.
@@ -41,9 +39,7 @@ pub fn from_slice<T: DeserializeOwned>(data: &[u8]) -> Result<T, TransportError>
 pub fn to_vec_named<T: Serialize>(value: &T, type_name: &str) -> Result<Vec<u8>, TransportError> {
     let mut buf = Vec::new();
     ciborium::into_writer(value, &mut buf).map_err(|e| {
-        TransportError::Serialization(format!(
-            "CBOR serialization of {type_name} failed: {e}"
-        ))
+        TransportError::Serialization(format!("CBOR serialization of {type_name} failed: {e}"))
     })?;
     Ok(buf)
 }
@@ -57,9 +53,7 @@ pub fn from_slice_named<T: DeserializeOwned>(
     type_name: &str,
 ) -> Result<T, TransportError> {
     ciborium::from_reader(data).map_err(|e| {
-        TransportError::Deserialization(format!(
-            "CBOR deserialization of {type_name} failed: {e}"
-        ))
+        TransportError::Deserialization(format!("CBOR deserialization of {type_name} failed: {e}"))
     })
 }
 
@@ -103,9 +97,7 @@ mod tests {
 
     #[test]
     fn test_cbor_is_compact() {
-        let ping = Ping {
-            nonce: [0; 8],
-        };
+        let ping = Ping { nonce: [0; 8] };
         let cbor = to_vec(&ping).expect("serialize");
         let json = serde_json::to_vec(&ping).expect("serialize json");
         // CBOR should generally be more compact than JSON

@@ -177,7 +177,10 @@ mod tests {
         let secret = X25519StaticSecret::random();
         let bytes = secret.to_bytes();
         let restored = X25519StaticSecret::from_bytes(bytes);
-        assert_eq!(secret.public_key().to_bytes(), restored.public_key().to_bytes());
+        assert_eq!(
+            secret.public_key().to_bytes(),
+            restored.public_key().to_bytes()
+        );
     }
 
     #[test]
@@ -191,14 +194,12 @@ mod tests {
     #[test]
     fn test_rfc7748_section6_1() {
         // RFC 7748 Section 6.1 test vector
-        let alice_private = hex::decode(
-            "77076d0a7318a57d3c16c17251b26645df4c2f87ebc0992ab177fba51db92c2a",
-        )
-        .expect("valid hex");
-        let alice_public = hex::decode(
-            "8520f0098930a754748b7ddcb43ef75a0dbf3a0d26381af4eba4a98eaa9b4e6a",
-        )
-        .expect("valid hex");
+        let alice_private =
+            hex::decode("77076d0a7318a57d3c16c17251b26645df4c2f87ebc0992ab177fba51db92c2a")
+                .expect("valid hex");
+        let alice_public =
+            hex::decode("8520f0098930a754748b7ddcb43ef75a0dbf3a0d26381af4eba4a98eaa9b4e6a")
+                .expect("valid hex");
 
         let mut secret_bytes = [0u8; 32];
         secret_bytes.copy_from_slice(&alice_private);

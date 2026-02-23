@@ -110,10 +110,7 @@ pub fn encrypt(recipient_pk: &X25519PublicKey, plaintext: &[u8]) -> Result<Ecies
 ///
 /// * `recipient_sk` - Recipient's X25519 static secret
 /// * `ciphertext` - The ECIES ciphertext (eph_pk || ciphertext || tag)
-pub fn decrypt(
-    recipient_sk: &X25519StaticSecret,
-    ciphertext: &EciesCiphertext,
-) -> Result<Vec<u8>> {
+pub fn decrypt(recipient_sk: &X25519StaticSecret, ciphertext: &EciesCiphertext) -> Result<Vec<u8>> {
     let eph_pk = X25519PublicKey::from_bytes(ciphertext.eph_pk);
     let recipient_pk = recipient_sk.public_key();
 
@@ -136,7 +133,12 @@ pub fn decrypt(
     nonce.copy_from_slice(&nonce_full[..12]);
 
     // Step 5: Decrypt with AAD = eph_pk
-    chacha20::decrypt(&enc_key, &nonce, &ciphertext.ciphertext_and_tag, &ciphertext.eph_pk)
+    chacha20::decrypt(
+        &enc_key,
+        &nonce,
+        &ciphertext.ciphertext_and_tag,
+        &ciphertext.eph_pk,
+    )
 }
 
 #[cfg(test)]

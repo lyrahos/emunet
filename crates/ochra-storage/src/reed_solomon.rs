@@ -98,10 +98,7 @@ impl ReedSolomonCodec {
     /// # Returns
     ///
     /// The original concatenated data (all 4 data shards joined).
-    pub fn decode(
-        &self,
-        shards: &[Option<Vec<u8>>; TOTAL_SHARDS],
-    ) -> Result<Vec<u8>> {
+    pub fn decode(&self, shards: &[Option<Vec<u8>>; TOTAL_SHARDS]) -> Result<Vec<u8>> {
         let present_count = shards.iter().filter(|s| s.is_some()).count();
         if present_count < DATA_SHARDS {
             return Err(StorageError::ReedSolomonDecode(format!(
@@ -113,9 +110,7 @@ impl ReedSolomonCodec {
             .iter()
             .flatten()
             .next()
-            .ok_or_else(|| {
-                StorageError::ReedSolomonDecode("no shards present".to_string())
-            })?
+            .ok_or_else(|| StorageError::ReedSolomonDecode("no shards present".to_string()))?
             .len();
 
         // Try to recover each data shard.
@@ -197,9 +192,7 @@ impl ReedSolomonCodec {
         let mut result = Vec::with_capacity(shard_len * DATA_SHARDS);
         for (i, shard) in recovered.iter().enumerate() {
             let data = shard.as_ref().ok_or_else(|| {
-                StorageError::ReedSolomonDecode(format!(
-                    "unable to recover data shard {i}"
-                ))
+                StorageError::ReedSolomonDecode(format!("unable to recover data shard {i}"))
             })?;
             result.extend_from_slice(data);
         }
@@ -220,9 +213,7 @@ impl ReedSolomonCodec {
     /// 4 data shards of equal length and the original (unpadded) data length.
     pub fn split_into_data_shards(&self, data: &[u8]) -> Result<([Vec<u8>; DATA_SHARDS], usize)> {
         if data.is_empty() {
-            return Err(StorageError::ReedSolomonEncode(
-                "data is empty".to_string(),
-            ));
+            return Err(StorageError::ReedSolomonEncode("data is empty".to_string()));
         }
 
         let original_len = data.len();

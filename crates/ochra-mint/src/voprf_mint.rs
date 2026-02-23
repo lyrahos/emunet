@@ -113,17 +113,13 @@ impl MintClient {
     /// # Errors
     ///
     /// - [`MintError::Voprf`] if the unblinding operation fails
-    pub fn unblind(
-        evaluated: &EvaluatedToken,
-        state: &MintBlindState,
-    ) -> Result<UnblindedToken> {
+    pub fn unblind(evaluated: &EvaluatedToken, state: &MintBlindState) -> Result<UnblindedToken> {
         let eval_element = EvaluatedElement {
             bytes: evaluated.evaluated_element.clone(),
         };
 
-        let output =
-            voprf::finalize(&state.blind_state, &eval_element)
-                .map_err(|e| MintError::Voprf(e.to_string()))?;
+        let output = voprf::finalize(&state.blind_state, &eval_element)
+            .map_err(|e| MintError::Voprf(e.to_string()))?;
 
         Ok(UnblindedToken {
             serial: state.serial,
@@ -143,10 +139,7 @@ impl MintServer {
     /// # Errors
     ///
     /// - [`MintError::Voprf`] if the evaluation fails
-    pub fn evaluate(
-        blinded: &BlindedToken,
-        server_key: &VoprfServerKey,
-    ) -> Result<EvaluatedToken> {
+    pub fn evaluate(blinded: &BlindedToken, server_key: &VoprfServerKey) -> Result<EvaluatedToken> {
         let blinded_element = BlindedElement {
             bytes: blinded.blinded_element.clone(),
         };
@@ -177,11 +170,8 @@ impl UnblindedToken {
     /// `commitment = BLAKE3::hash(serial || voprf_output || denomination_le)`
     pub fn commitment(&self) -> [u8; 32] {
         let denom_bytes = self.denomination.to_le_bytes();
-        let fields = blake3::encode_multi_field(&[
-            &self.serial[..],
-            &self.voprf_output,
-            &denom_bytes,
-        ]);
+        let fields =
+            blake3::encode_multi_field(&[&self.serial[..], &self.voprf_output, &denom_bytes]);
         blake3::hash(&fields)
     }
 }

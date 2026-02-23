@@ -254,10 +254,8 @@ mod tests {
     #[test]
     fn test_sign_verify_with_known_seed() {
         // Use a known seed, sign, and verify roundtrip
-        let seed = hex::decode(
-            "9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60",
-        )
-        .expect("valid hex");
+        let seed = hex::decode("9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60")
+            .expect("valid hex");
         let mut seed_bytes = [0u8; 32];
         seed_bytes.copy_from_slice(&seed);
         let kp = KeyPair::from_bytes(&seed_bytes);

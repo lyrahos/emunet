@@ -7,7 +7,7 @@
 use ochra_crypto::blake3;
 use serde::{Deserialize, Serialize};
 
-use crate::{SpendError, Result};
+use crate::{Result, SpendError};
 
 /// A P2P transfer note encrypted to a recipient.
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -52,10 +52,7 @@ pub fn create_transfer_note(
     }
 
     // Derive encryption key from recipient's public key
-    let enc_key = blake3::derive_key(
-        blake3::contexts::TRANSFER_NOTE_KEY,
-        recipient_pk,
-    );
+    let enc_key = blake3::derive_key(blake3::contexts::TRANSFER_NOTE_KEY, recipient_pk);
 
     // Encrypt the payload: amount (8 bytes LE) || message (UTF-8)
     let mut plaintext = Vec::with_capacity(8 + message.len());
@@ -104,10 +101,7 @@ pub fn decrypt_transfer_note(
     recipient_sk: &[u8; 32],
 ) -> Result<(u64, String)> {
     // Derive the same encryption key
-    let enc_key = blake3::derive_key(
-        blake3::contexts::TRANSFER_NOTE_KEY,
-        recipient_sk,
-    );
+    let enc_key = blake3::derive_key(blake3::contexts::TRANSFER_NOTE_KEY, recipient_sk);
 
     // Decrypt with XOR stream
     let mut keystream = vec![0u8; note.encrypted_message.len()];
@@ -129,9 +123,8 @@ pub fn decrypt_transfer_note(
     amount_bytes.copy_from_slice(&plaintext[..8]);
     let amount = u64::from_le_bytes(amount_bytes);
 
-    let message = String::from_utf8(plaintext[8..].to_vec()).map_err(|e| {
-        SpendError::CryptoError(format!("invalid UTF-8 in decrypted message: {e}"))
-    })?;
+    let message = String::from_utf8(plaintext[8..].to_vec())
+        .map_err(|e| SpendError::CryptoError(format!("invalid UTF-8 in decrypted message: {e}")))?;
 
     Ok((amount, message))
 }
@@ -150,8 +143,7 @@ mod tests {
         assert_eq!(note.amount, amount);
 
         // In v1, pk == sk for symmetric derivation
-        let (dec_amount, dec_msg) =
-            decrypt_transfer_note(&note, &recipient_pk).expect("decrypt");
+        let (dec_amount, dec_msg) = decrypt_transfer_note(&note, &recipient_pk).expect("decrypt");
         assert_eq!(dec_amount, amount);
         assert_eq!(dec_msg, message);
     }

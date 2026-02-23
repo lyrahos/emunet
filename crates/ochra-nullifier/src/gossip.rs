@@ -123,11 +123,7 @@ mod tests {
 
     #[test]
     fn test_create_gossip_message() {
-        let msg = create_gossip_message(
-            vec![[0x01; 32], [0x02; 32]],
-            42,
-            [0xAA; 32],
-        );
+        let msg = create_gossip_message(vec![[0x01; 32], [0x02; 32]], 42, [0xAA; 32]);
         assert_eq!(msg.nullifiers.len(), 2);
         assert_eq!(msg.epoch, 42);
         assert_eq!(msg.sender_id, [0xAA; 32]);

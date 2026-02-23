@@ -351,7 +351,8 @@ mod tests {
     #[test]
     fn test_intro_point_retire() {
         let mut mgr = IntroPointManager::new(3);
-        mgr.establish([0x01u8; 32], [0x10u8; 32]).expect("establish");
+        mgr.establish([0x01u8; 32], [0x10u8; 32])
+            .expect("establish");
         assert_eq!(mgr.active_count(), 1);
 
         mgr.retire(&[0x01u8; 32]);
@@ -361,7 +362,8 @@ mod tests {
     #[test]
     fn test_intro_point_mark_failed() {
         let mut mgr = IntroPointManager::new(3);
-        mgr.establish([0x01u8; 32], [0x10u8; 32]).expect("establish");
+        mgr.establish([0x01u8; 32], [0x10u8; 32])
+            .expect("establish");
         mgr.mark_failed(&[0x01u8; 32]);
         assert_eq!(mgr.active_count(), 0);
     }
@@ -379,7 +381,8 @@ mod tests {
     #[test]
     fn test_intro_point_record_introduction() {
         let mut mgr = IntroPointManager::new(3);
-        mgr.establish([0x01u8; 32], [0x10u8; 32]).expect("establish");
+        mgr.establish([0x01u8; 32], [0x10u8; 32])
+            .expect("establish");
         mgr.record_introduction(&[0x01u8; 32]);
         mgr.record_introduction(&[0x01u8; 32]);
         assert_eq!(mgr.active_count(), 1);

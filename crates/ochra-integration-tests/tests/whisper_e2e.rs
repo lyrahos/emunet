@@ -230,20 +230,14 @@ async fn whisper_session_full_lifecycle() {
     .to_string();
 
     let transfer_nonce = message_nonce(&alice_nonce_prefix, 3);
-    let encrypted_transfer = chacha20::encrypt_no_aad(
-        &alice_key,
-        &transfer_nonce,
-        transfer_payload.as_bytes(),
-    )
-    .expect("Transfer payload encryption should succeed");
+    let encrypted_transfer =
+        chacha20::encrypt_no_aad(&alice_key, &transfer_nonce, transfer_payload.as_bytes())
+            .expect("Transfer payload encryption should succeed");
 
     // Bob decrypts the transfer.
-    let decrypted_transfer = chacha20::decrypt_no_aad(
-        &bob_key,
-        &transfer_nonce,
-        &encrypted_transfer,
-    )
-    .expect("Transfer payload decryption should succeed");
+    let decrypted_transfer =
+        chacha20::decrypt_no_aad(&bob_key, &transfer_nonce, &encrypted_transfer)
+            .expect("Transfer payload decryption should succeed");
     let parsed: serde_json::Value =
         serde_json::from_slice(&decrypted_transfer).expect("Transfer JSON should parse");
     assert_eq!(
@@ -263,12 +257,15 @@ async fn whisper_session_full_lifecycle() {
     .expect("Bob token insertion should succeed");
 
     // Verify balances.
-    let alice_balance = ochra_db::queries::wallet::balance(&alice.db)
-        .expect("Alice balance query should succeed");
-    assert_eq!(alice_balance, 0, "Alice should have zero balance after spend");
+    let alice_balance =
+        ochra_db::queries::wallet::balance(&alice.db).expect("Alice balance query should succeed");
+    assert_eq!(
+        alice_balance, 0,
+        "Alice should have zero balance after spend"
+    );
 
-    let bob_balance = ochra_db::queries::wallet::balance(&bob.db)
-        .expect("Bob balance query should succeed");
+    let bob_balance =
+        ochra_db::queries::wallet::balance(&bob.db).expect("Bob balance query should succeed");
     assert_eq!(
         bob_balance, transfer_amount,
         "Bob should have received the transfer amount"
@@ -384,8 +381,8 @@ async fn whisper_message_tamper_detection() {
     let nonce = message_nonce(&nonce_prefix, 1);
 
     let plaintext = b"Sensitive whisper content";
-    let ciphertext = chacha20::encrypt_no_aad(&enc_key, &nonce, plaintext)
-        .expect("Encryption should succeed");
+    let ciphertext =
+        chacha20::encrypt_no_aad(&enc_key, &nonce, plaintext).expect("Encryption should succeed");
 
     // Tamper with the ciphertext.
     let mut tampered = ciphertext.clone();

@@ -60,7 +60,10 @@ pub fn replace_guardian(
         .ok_or_else(|| GuardianError::NotFound(hex::encode(old_id)))?;
 
     // Check the new guardian is not already enrolled
-    if guardians.iter().any(|g| g.pik_hash == new_guardian.pik_hash) {
+    if guardians
+        .iter()
+        .any(|g| g.pik_hash == new_guardian.pik_hash)
+    {
         return Err(GuardianError::AlreadyEnrolled(hex::encode(
             new_guardian.pik_hash,
         )));
@@ -98,11 +101,7 @@ mod tests {
 
     #[test]
     fn test_replace_guardian() {
-        let mut guardians = vec![
-            make_guardian(1),
-            make_guardian(2),
-            make_guardian(3),
-        ];
+        let mut guardians = vec![make_guardian(1), make_guardian(2), make_guardian(3)];
 
         let new_guardian = make_guardian(4);
         let result = replace_guardian(&[2; 32], new_guardian, &mut guardians).expect("replace");
@@ -135,11 +134,7 @@ mod tests {
 
     #[test]
     fn test_replace_preserves_order() {
-        let mut guardians = vec![
-            make_guardian(1),
-            make_guardian(2),
-            make_guardian(3),
-        ];
+        let mut guardians = vec![make_guardian(1), make_guardian(2), make_guardian(3)];
 
         let new_guardian = make_guardian(10);
         replace_guardian(&[2; 32], new_guardian, &mut guardians).expect("replace");

@@ -115,10 +115,7 @@ pub fn build_manifest(chunks: &[Chunk], total_size: u64) -> ChunkManifest {
 /// Returns [`DhtError::MissingChunk`] if any chunk is missing.
 /// Returns [`DhtError::Serialization`] if a chunk's data hash does not match
 /// the manifest.
-pub fn assemble_record(
-    manifest: &ChunkManifest,
-    chunks: &[Chunk],
-) -> Result<Vec<u8>> {
+pub fn assemble_record(manifest: &ChunkManifest, chunks: &[Chunk]) -> Result<Vec<u8>> {
     // Sort chunks by index.
     let mut sorted_chunks = chunks.to_vec();
     sorted_chunks.sort_by_key(|c| c.index);
@@ -260,10 +257,7 @@ mod tests {
         let manifest = build_manifest(&chunks, value.len() as u64);
 
         // Remove the middle chunk
-        let partial: Vec<Chunk> = chunks
-            .into_iter()
-            .filter(|c| c.index != 1)
-            .collect();
+        let partial: Vec<Chunk> = chunks.into_iter().filter(|c| c.index != 1).collect();
 
         let result = assemble_record(&manifest, &partial);
         assert!(result.is_err());
@@ -302,9 +296,6 @@ mod tests {
         assert_eq!(manifest.total_chunks, 1);
         assert_eq!(manifest.total_size, value.len() as u64);
         assert_eq!(manifest.chunk_hashes.len(), 1);
-        assert_eq!(
-            manifest.chunk_hashes[0],
-            ochra_crypto::blake3::hash(value)
-        );
+        assert_eq!(manifest.chunk_hashes[0], ochra_crypto::blake3::hash(value));
     }
 }

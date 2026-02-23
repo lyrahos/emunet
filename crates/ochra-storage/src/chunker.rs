@@ -303,9 +303,7 @@ mod tests {
 
     #[test]
     fn test_merkle_proof_four_leaves() {
-        let leaves: Vec<[u8; 32]> = (0..4u8)
-            .map(|i| blake3::merkle_leaf(&[i]))
-            .collect();
+        let leaves: Vec<[u8; 32]> = (0..4u8).map(|i| blake3::merkle_leaf(&[i])).collect();
         let root = build_merkle_root(&leaves);
 
         for i in 0..4 {
@@ -319,9 +317,7 @@ mod tests {
 
     #[test]
     fn test_merkle_proof_three_leaves_odd() {
-        let leaves: Vec<[u8; 32]> = (0..3u8)
-            .map(|i| blake3::merkle_leaf(&[i]))
-            .collect();
+        let leaves: Vec<[u8; 32]> = (0..3u8).map(|i| blake3::merkle_leaf(&[i])).collect();
         let root = build_merkle_root(&leaves);
 
         for i in 0..3 {

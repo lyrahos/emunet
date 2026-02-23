@@ -85,7 +85,8 @@ mod tests {
     #[test]
     fn test_fresh_migration() {
         let conn = Connection::open_in_memory().expect("open");
-        conn.execute_batch("PRAGMA foreign_keys = ON;").expect("pragma");
+        conn.execute_batch("PRAGMA foreign_keys = ON;")
+            .expect("pragma");
         run(&conn).expect("migrate");
 
         let version: u32 = conn
@@ -97,7 +98,8 @@ mod tests {
     #[test]
     fn test_idempotent_migration() {
         let conn = Connection::open_in_memory().expect("open");
-        conn.execute_batch("PRAGMA foreign_keys = ON;").expect("pragma");
+        conn.execute_batch("PRAGMA foreign_keys = ON;")
+            .expect("pragma");
         run(&conn).expect("first run");
         run(&conn).expect("second run should be no-op");
     }
@@ -105,7 +107,8 @@ mod tests {
     #[test]
     fn test_default_settings() {
         let conn = Connection::open_in_memory().expect("open");
-        conn.execute_batch("PRAGMA foreign_keys = ON;").expect("pragma");
+        conn.execute_batch("PRAGMA foreign_keys = ON;")
+            .expect("pragma");
         run(&conn).expect("migrate");
 
         let theme: String = conn
@@ -121,7 +124,8 @@ mod tests {
     #[test]
     fn test_tables_created() {
         let conn = Connection::open_in_memory().expect("open");
-        conn.execute_batch("PRAGMA foreign_keys = ON;").expect("pragma");
+        conn.execute_batch("PRAGMA foreign_keys = ON;")
+            .expect("pragma");
         run(&conn).expect("migrate");
 
         let expected_tables = [

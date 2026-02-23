@@ -143,8 +143,7 @@ pub fn redeem_token(
 
 /// Encode a contact exchange token to a base64 string for sharing.
 pub fn encode_token(token: &ContactExchangeToken) -> Result<String> {
-    let json =
-        serde_json::to_vec(token).map_err(|e| InviteError::Serialization(e.to_string()))?;
+    let json = serde_json::to_vec(token).map_err(|e| InviteError::Serialization(e.to_string()))?;
     Ok(base64::Engine::encode(
         &base64::engine::general_purpose::URL_SAFE_NO_PAD,
         &json,
@@ -153,11 +152,8 @@ pub fn encode_token(token: &ContactExchangeToken) -> Result<String> {
 
 /// Decode a contact exchange token from a base64 string.
 pub fn decode_token(encoded: &str) -> Result<ContactExchangeToken> {
-    let json = base64::Engine::decode(
-        &base64::engine::general_purpose::URL_SAFE_NO_PAD,
-        encoded,
-    )
-    .map_err(|e| InviteError::Malformed(format!("invalid base64: {}", e)))?;
+    let json = base64::Engine::decode(&base64::engine::general_purpose::URL_SAFE_NO_PAD, encoded)
+        .map_err(|e| InviteError::Malformed(format!("invalid base64: {}", e)))?;
 
     serde_json::from_slice(&json)
         .map_err(|e| InviteError::Malformed(format!("invalid token JSON: {}", e)))
@@ -193,12 +189,7 @@ mod tests {
         let x_secret = X25519StaticSecret::random();
         let x_pk = x_secret.public_key();
 
-        let token = generate_token(
-            &kp.signing_key,
-            [0xAAu8; 32],
-            "Alice",
-            x_pk.to_bytes(),
-        );
+        let token = generate_token(&kp.signing_key, [0xAAu8; 32], "Alice", x_pk.to_bytes());
 
         (token, kp)
     }

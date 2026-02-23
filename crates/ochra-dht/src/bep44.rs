@@ -13,7 +13,6 @@
 use std::collections::HashMap;
 use std::time::{Duration, Instant};
 
-
 use crate::{DhtError, Result, MAX_RECORD_SIZE};
 
 /// Default record time-to-live (2 hours).
@@ -338,13 +337,9 @@ mod tests {
     #[test]
     fn test_mutable_record_roundtrip() {
         let kp = KeyPair::generate();
-        let record = create_mutable_record(
-            &kp.signing_key,
-            b"test-salt",
-            1,
-            b"mutable data".to_vec(),
-        )
-        .expect("create record");
+        let record =
+            create_mutable_record(&kp.signing_key, b"test-salt", 1, b"mutable data".to_vec())
+                .expect("create record");
 
         assert!(record.validate().is_ok());
     }
@@ -352,13 +347,8 @@ mod tests {
     #[test]
     fn test_mutable_record_wrong_signature() {
         let kp = KeyPair::generate();
-        let mut record = create_mutable_record(
-            &kp.signing_key,
-            b"salt",
-            1,
-            b"data".to_vec(),
-        )
-        .expect("create record");
+        let mut record = create_mutable_record(&kp.signing_key, b"salt", 1, b"data".to_vec())
+            .expect("create record");
 
         // Tamper with the value
         if let DhtRecord::Mutable { ref mut value, .. } = record {
@@ -372,13 +362,8 @@ mod tests {
     fn test_mutable_record_storage_key() {
         let kp = KeyPair::generate();
         let salt = b"my-salt";
-        let record = create_mutable_record(
-            &kp.signing_key,
-            salt,
-            1,
-            b"value".to_vec(),
-        )
-        .expect("create record");
+        let record = create_mutable_record(&kp.signing_key, salt, 1, b"value".to_vec())
+            .expect("create record");
 
         let expected_key = {
             let mut input = Vec::new();
@@ -412,12 +397,10 @@ mod tests {
         let mut store = RecordStore::new();
         let kp = KeyPair::generate();
 
-        let r1 = create_mutable_record(&kp.signing_key, b"s", 1, b"v1".to_vec())
-            .expect("create");
-        let r2 = create_mutable_record(&kp.signing_key, b"s", 2, b"v2".to_vec())
-            .expect("create");
-        let r_stale = create_mutable_record(&kp.signing_key, b"s", 1, b"v_stale".to_vec())
-            .expect("create");
+        let r1 = create_mutable_record(&kp.signing_key, b"s", 1, b"v1".to_vec()).expect("create");
+        let r2 = create_mutable_record(&kp.signing_key, b"s", 2, b"v2".to_vec()).expect("create");
+        let r_stale =
+            create_mutable_record(&kp.signing_key, b"s", 1, b"v_stale".to_vec()).expect("create");
 
         store.put(r1).expect("put r1");
         store.put(r2).expect("put r2");
@@ -425,7 +408,10 @@ mod tests {
         // Stale sequence should be rejected
         let result = store.put(r_stale);
         assert!(result.is_err());
-        assert!(matches!(result, Err(DhtError::StaleSequence { got: 1, have: 2 })));
+        assert!(matches!(
+            result,
+            Err(DhtError::StaleSequence { got: 1, have: 2 })
+        ));
     }
 
     #[test]
