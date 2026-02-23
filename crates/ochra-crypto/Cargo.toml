@@ -1,0 +1,49 @@
+[package]
+name = "ochra-crypto"
+version.workspace = true
+edition.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+# Signatures
+ed25519-dalek.workspace = true
+x25519-dalek.workspace = true
+
+# AEAD
+chacha20poly1305.workspace = true
+
+# Hashing
+blake3.workspace = true
+argon2.workspace = true
+
+# ZK / BLS12-381
+ark-ff.workspace = true
+ark-ec.workspace = true
+ark-bls12-381.workspace = true
+ark-groth16.workspace = true
+ark-snark.workspace = true
+ark-relations.workspace = true
+ark-r1cs-std.workspace = true
+ark-crypto-primitives.workspace = true
+ark-std.workspace = true
+ark-serialize.workspace = true
+
+# VOPRF
+voprf.workspace = true
+
+# FROST
+frost-ed25519.workspace = true
+
+# Utilities
+rand.workspace = true
+rand_core.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+hex.workspace = true
+thiserror.workspace = true
+zeroize.workspace = true
+
+[dev-dependencies]
+hex-literal = "0.4"

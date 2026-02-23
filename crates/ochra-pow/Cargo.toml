@@ -1,0 +1,13 @@
+[package]
+name = "ochra-pow"
+version.workspace = true
+edition.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+ochra-crypto = { path = "../ochra-crypto" }
+thiserror.workspace = true
+rand.workspace = true
+serde.workspace = true

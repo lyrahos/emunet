@@ -1,0 +1,16 @@
+[package]
+name = "ochra-guardian"
+version.workspace = true
+edition.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+ochra-crypto = { path = "../ochra-crypto" }
+ochra-types = { path = "../ochra-types" }
+thiserror.workspace = true
+serde.workspace = true
+rand.workspace = true
+tracing.workspace = true
+hex.workspace = true

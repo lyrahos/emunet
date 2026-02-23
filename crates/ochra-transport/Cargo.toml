@@ -1,0 +1,21 @@
+[package]
+name = "ochra-transport"
+version.workspace = true
+edition.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+ochra-crypto = { path = "../ochra-crypto" }
+ochra-types = { path = "../ochra-types" }
+quinn.workspace = true
+rustls.workspace = true
+tokio.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+ciborium.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+rand.workspace = true
+rcgen = "0.13"
