@@ -4,9 +4,6 @@ version = "0.1.0"
 edition = "2021"
 description = "Ochra desktop application (Tauri v2)"
 
-# This crate is NOT part of the workspace. It builds separately via Tauri's
-# build system. See the root Cargo.toml for the workspace members list.
-
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
 

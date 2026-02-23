@@ -23,6 +23,7 @@ members = [
     "crates/ochra-guardian",
     "crates/ochra-daemon",
     "crates/ochra-integration-tests",
+    "ui/src-tauri",
 ]
 
 [workspace.package]
